@@ -59,9 +59,9 @@ account the reflection shield.""") {
                                   false ->  Spell()),
                               false,
                               10.f,
-                              Map(true -> 0.f, false -> 88.f))
+                              Map(true -> 0.f, false -> 100.f))
     game = game.getAftermath
-    assert(game.availableGamePoints(game.player) === 88.f)
+    assert(game.availableGamePoints(game.player) === 100.f)
   }
   def getAndTestGame(o: Option[WitchcraftGame]) =
     o match {

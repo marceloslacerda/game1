@@ -5,7 +5,7 @@ import javax.swing.{JPanel, BorderFactory}
 import java.awt.{Canvas, Graphics2D, Color, Rectangle}
 import java.awt.geom.Line2D
 import java.awt.event.{MouseListener, MouseEvent, MouseMotionListener}
-import rules.{WitchcraftGame, Form}
+import rules.{WitchcraftGame, Form, Spell}
 import rules.Form._
 import collection.mutable.LinkedList
 import collection.immutable.Stack
@@ -28,6 +28,7 @@ object WitchcraftApp extends SimpleSwingApplication {
   val commitButton = new Button(Action("Commit") { doCommit() })
   val availTPointsLabel = new Label("")
   var gameStates = Stack(WitchcraftGame())
+  val spellList = new ListView[Spell]()
 
   def top = new MainFrame {
     title = "Witchcraft"
@@ -45,6 +46,7 @@ object WitchcraftApp extends SimpleSwingApplication {
              commitButton,
              actionPanel,
              availPointsPanel,
+             spellList,
              new Button(Action("Exit") {
                top.close()
                System.exit(0);
@@ -53,7 +55,7 @@ object WitchcraftApp extends SimpleSwingApplication {
     }
   }
 
-  def availPointsPanel = new BoxPanel(Orientation.Vertical) {
+  def availPointsPanel = new BoxPanel(Orientation.Horizontal) {
     contents ++ List(
       new Label("Available points:"),
       availTPointsLabel
@@ -110,8 +112,10 @@ object WitchcraftApp extends SimpleSwingApplication {
                         0)
       }
     }
-    if(newOptionalState != None)
+    if(newOptionalState != None) {
       gameStates = gameStates push newOptionalState.get
+      spellList.listData +:= gameStates.head.currentSpell
+    }
     clearBoard()
     nextForm.enabled = false
   }
@@ -123,6 +127,7 @@ object WitchcraftApp extends SimpleSwingApplication {
     scores(0)._2.text = current.availableGamePoints(true).toString
     scores(1)._2.text = current.availableGamePoints(false).toString
     availTPointsLabel.text = current.availableTurnPoints.toString
+    spellList.listData = Seq[Spell]()
     clearBoard()
   }
 

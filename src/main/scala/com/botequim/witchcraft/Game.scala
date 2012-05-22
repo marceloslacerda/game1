@@ -25,6 +25,9 @@ class WitchcraftGame (s: Map[Boolean, Int],
   val spells = spe
   val availableTurnPoints = availT
   val availableGamePoints = availG
+
+  def currentSpell = spells(player)
+
   def compose(f: Form, points: Int, intersec: Int): Option[WitchcraftGame] ={
     if(points < 3 && f == Convex)
       return None
@@ -45,17 +48,22 @@ class WitchcraftGame (s: Map[Boolean, Int],
                          newSpells,
                          player,
                          newTurnPoints,
-                         Map(!player ->
-                             availableGamePoints(!player),
+                         Map(!player -> availableGamePoints(!player),
                              player -> newGamePoints)))
   }
   def commit: WitchcraftGame ={
+    val availGP = (
+      if(availableTurnPoints > 0)
+        Map(!player -> availableGamePoints(!player),
+            player -> (availableGamePoints(player) - availableTurnPoints))
+      else availableGamePoints)
+
     if(player) 
       new WitchcraftGame(score,
                    spells,
                    !player,
                    pointsPTurnLimit,
-                   availableGamePoints)
+                   availGP)
     else
       getAftermath
   }
@@ -104,15 +112,28 @@ class WitchcraftGame (s: Map[Boolean, Int],
 }
 
 object WitchcraftGame {
-  val combinationMaxSize = 4
   val pointsPTurnLimit = 10
-  val initialPoints = 88
+  val initialPoints = 100
   def apply() = new WitchcraftGame(
       Map(true -> 0, false -> 0),
       Map(true -> Spell(), false -> Spell()),
       true,
       pointsPTurnLimit,
       Map(true -> initialPoints, false -> initialPoints))
+}
+
+object Spell {
+  def apply(m: Int = 0) = new Spell(m, Nil)
+  def getAttackPower(comb: Map[Effect, Int]) =
+    comb(Attack).toFloat
+  def getDefensePower(comb: Map[Effect, Int]) =
+    comb(Defense).toFloat
+  def getReflectPower(comb: Map[Effect, Int]) =
+    (1 to comb(Reflect)).map(i => {
+      1./math.pow(2., i)
+    }).sum.toFloat
+  def getChargeLevel(comb: Map[Effect, Int]) =
+    comb(Charge)
 }
 
 class Spell(mult: Int, comb: List[(Effect, Int)]) {
@@ -191,18 +212,12 @@ class Spell(mult: Int, comb: List[(Effect, Int)]) {
     }
     result
   }
-}
 
-object Spell {
-  def apply(m: Int = 0) = new Spell(m, Nil)
-  def getAttackPower(comb: Map[Effect, Int]) =
-    comb(Attack).toFloat
-  def getDefensePower(comb: Map[Effect, Int]) =
-    comb(Defense).toFloat
-  def getReflectPower(comb: Map[Effect, Int]) =
-    (1 to comb(Reflect)).map(i => {
-      1./math.pow(2., i)
-    }).sum.toFloat
-  def getChargeLevel(comb: Map[Effect, Int]) =
-    comb(Charge)
+  override def toString(): String = {
+    import Spell._
+    val mcomb = getTurnResult
+    (comb.head.toString + " total attack: " + getAttackPower(mcomb).toString
+     + " total defense: " + getDefensePower(mcomb).toString + " total reflect: " + getReflectPower(mcomb).toString
+     + " total charge: " + getChargeLevel(mcomb).toString)
+  }
 }
