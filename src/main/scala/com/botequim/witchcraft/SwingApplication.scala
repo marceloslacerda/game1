@@ -100,16 +100,14 @@ object WitchcraftApp extends SimpleSwingApplication {
         current.compose(Circle, 0, 0)
       }
       case Convex => {
-        println(formType, points.size, intersectionTotal)
-        current.compose(Convex,
-                        points.size,
-                        intersectionTotal)
+        println(formType, points.size, 0)
+        current.compose(Convex, points.size, 0)
       }
       case Concave => {
         println(formType, points.size, intersectionTotal)
         current.compose(Concave,
                         points.size,
-                        0)
+                        intersectionTotal)
       }
     }
     if(newOptionalState != None) {
@@ -303,14 +301,14 @@ object WitchcraftApp extends SimpleSwingApplication {
         if(timeStamp < 0) { timeStamp = System.currentTimeMillis }
       }
       def mouseReleased(e: MouseEvent) {
-        updateTPoints()
-        if(circle || !points.isEmpty) return
-        if(timeStamp - System.currentTimeMillis + 1000 < 0) {
+        if(!(circle || !points.isEmpty)
+           && System.currentTimeMillis - timeStamp >= 1000) {
           drawBigCircle()
           circle = true
           nextForm.enabled = true
         }
         timeStamp  = -1
+        updateTPoints()
       }
     })
 
