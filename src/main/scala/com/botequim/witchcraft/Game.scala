@@ -112,8 +112,8 @@ class WitchcraftGame (s: Map[Boolean, Int],
 }
 
 object WitchcraftGame {
-  val pointsPTurnLimit = 10
-  val initialPoints = 100
+  val pointsPTurnLimit = 10.f
+  val initialPoints = 100.f
   def apply() = new WitchcraftGame(
       Map(true -> 0, false -> 0),
       Map(true -> Spell(), false -> Spell()),
