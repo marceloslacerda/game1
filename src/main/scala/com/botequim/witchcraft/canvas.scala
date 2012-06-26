@@ -17,6 +17,7 @@ class Canvas {
   var formReadyListener: Option[() => Unit] = None
   var boardClearedListener: Option[() => Unit] = None
   var mouseReleasedListener: Option[() => Unit] = None
+  var bufferedGraphics : Option[Graphics2D] = None
   setupPanel()
 
   def clearCanvas() {
@@ -101,10 +102,28 @@ class Canvas {
   }
 
   def drawOnCanvas(f: (Graphics2D) => Unit) {
-    val graphics: Graphics2D = panel.getGraphics().asInstanceOf[Graphics2D]
-    f(graphics)
-    panel.paint(graphics)
+    bufferedGraphics match {
+      case None =>
+        val graphics: Graphics2D = panel.getGraphics().asInstanceOf[Graphics2D]
+        f(graphics)
+        panel.paint(graphics)
+        panel.setVisible(true)
+      case Some(g) =>
+        f(g)
+    }
+  }
+
+  def prepareGraphics() {
+    if(!bufferedGraphics.isEmpty)
+      println("Warning overwriting graphics!")
+    bufferedGraphics = Option(panel.getGraphics().asInstanceOf[Graphics2D])
+  }
+
+  def paintGraphics() {
+    if(bufferedGraphics.isEmpty) println("Graphics unset!")
+    panel.paint(bufferedGraphics.get)
     panel.setVisible(true)
+    bufferedGraphics = None
   }
 
   def linesWithPoint(p: Point): Seq[Line] =
@@ -135,6 +154,7 @@ class Canvas {
   }
 
   def deletePoint(p: Point) {
+    prepareGraphics()
     linesWithPoint(points.head).foreach({ l =>
       eraseLine(l)
       lines = lines filterNot (_ == l)
@@ -143,6 +163,7 @@ class Canvas {
     points = points filterNot (_ == p)
     drawLines()
     drawCircles()
+    paintGraphics()
   }
 
   def clickEmptyArea(x: Int, y: Int) {

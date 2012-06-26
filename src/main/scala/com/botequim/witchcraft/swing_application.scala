@@ -88,24 +88,6 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
     )
   }
 
-/*
-  def updateScore {
-    val result = game.endGame
-    if(result == 'DRAW) {
-      victoryLabel.text = winningMessages(1)
-      victoryLabel.visible = true
-    }
-    else if (result == 'VICTORY) {
-      val winner = !game.currentPlayer
-      victoryLabel.text = winningMessages(0).format(
-        playerNames(winner))
-      victoryLabel.visible = true
-      val scoreBoard = (if(winner) scores(0)
-                        else scores(1))
-        scoreBoard._2.text = game.score(winner).toString
-    }
-  }*/
-
   def scorePanel: BoxPanel = {
     scores(0)._1 border = BorderFactory.createEmptyBorder(0, 0, 0, 10)
     scores(1)._1 border = BorderFactory.createEmptyBorder(0, 0, 0, 10)
@@ -125,23 +107,4 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
       border = Swing.EmptyBorder(0, 30, 0, 30)
     }
   }
-/*
-  def controlPanel: BoxPanel = {
-    new BoxPanel(Orientation.Horizontal) {
-      contents += new Button(Action("Restart") {
-        game = game.cleanBoard.asInstanceOf[T]
-        setBoard
-        victoryLabel.visible = false
-      })
-      contents += depthField
-      border = Swing.EmptyBorder(0, 30, 0, 30)
-    }
-  }
-
-  def setBoard {
-    for(i <- 0 until game.height;
-        j <- 0 until game.width){
-      buttons(i)(j).text = game(i)(j).toString
-    }
-  }*/
 }
