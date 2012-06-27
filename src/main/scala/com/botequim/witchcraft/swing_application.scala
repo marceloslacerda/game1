@@ -4,9 +4,10 @@ import scala.swing._
 import javax.swing.{JPanel, BorderFactory}
 import rules.{Form, Spell, WitchcraftGame}
 import java.awt.{Color}
+import com.botequim.ZebraJList
 
 object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
-  val windowSize = new Dimension(250, 200)
+  val windowSize = new Dimension(640, 450)
   val playerNames = Map(true -> "A", false -> "B")
   val victoryLabel = new Label()
   val scores = List(
@@ -15,7 +16,9 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
   val nextForm = new Button(Action("Next Figure")(addForm))
   val commitButton = new Button(Action("Commit")(doCommit))
   val availTPointsLabel = new Label("")
-  val spellList = new ListView[Spell]()
+  val spellList = ListView.wrap[Spell](new ZebraJList())
+  val yourSpell = new Label()
+  val enemySpell = new Label()
   val exitButton = new Button(Action("Exit")(onExit))
 
   def formReady() {
@@ -59,7 +62,7 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
 
   def top = new MainFrame {
     title = "Witchcraft"
-    maximumSize = windowSize
+//    maximumSize = windowSize
     minimumSize = windowSize
     nextForm.enabled = false
     commitButton.enabled = true
@@ -68,24 +71,36 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
     scores(0)._2.text = WitchcraftGame.initialPoints.toString
     scores(1)._2.text = WitchcraftGame.initialPoints.toString
     availTPointsLabel.text = WitchcraftGame.pointsPTurnLimit.toString
-    contents = new BoxPanel(Orientation.Vertical) {
-      contents ++
-        List(scorePanel,
-             nextForm,
-             commitButton,
-             actionPanel,
-             availPointsPanel,
-             spellList,
-             exitButton
-           )
+    contents = new BorderPanel {
+      import BorderPanel.Position._
+      add(scorePanel, North)
+      add(controlsPanel, East)
+      add(actionPanel, Center)
+      add(spellListPanel, West)
+      add(exitButton, South)
     }
   }
+
+  def controlsPanel = new BoxPanel(Orientation.Vertical) {
+    contents ++ List(
+      nextForm,
+      commitButton
+    )
+  }
+
 
   def availPointsPanel = new BoxPanel(Orientation.Horizontal) {
     contents ++ List(
       new Label("Available points:"),
       availTPointsLabel
     )
+  }
+
+  def spellListPanel = new BoxPanel(Orientation.Vertical) {
+    spellList.fixedCellHeight = 20;
+    contents += new ScrollPane { contents = spellList }
+    contents += yourSpell
+    contents += enemySpell
   }
 
   def scorePanel: BoxPanel = {
@@ -104,6 +119,7 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
         })
       }
       contents += victoryLabel
+      contents += availPointsPanel
       border = Swing.EmptyBorder(0, 30, 0, 30)
     }
   }
