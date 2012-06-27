@@ -1,6 +1,7 @@
 package com.botequim.witchcraft
 
 import scala.swing._
+import java.awt.Dimension
 import javax.swing.{JPanel, BorderFactory}
 import rules.{Form, Spell, WitchcraftGame}
 import java.awt.{Color}
@@ -82,6 +83,12 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
   }
 
   def controlsPanel = new BoxPanel(Orientation.Vertical) {
+    val h = commitButton.preferredSize.height
+    val w = 130
+    nextForm.preferredSize = new Dimension(w, h)
+    commitButton.preferredSize = new Dimension(w, h)
+    nextForm.maximumSize = new Dimension(w, h)
+    commitButton.maximumSize = new Dimension(w, h)
     contents ++ List(
       nextForm,
       commitButton
