@@ -94,7 +94,8 @@ class Canvas {
       g.setPaint(Color.black)
       g.drawLine(x1, y1, x2, y2)
     }
-    drawCircles()
+    drawCircle(x1, y1)
+    drawCircle(x2, y2)
   }
 
   def drawLines() {
@@ -113,14 +114,9 @@ class Canvas {
     }
   }
 
-  def prepareGraphics() {
-    if(!bufferedGraphics.isEmpty)
-      println("Warning overwriting graphics!")
+  def bufferedDraw(f: () => Unit) {
     bufferedGraphics = Option(panel.getGraphics().asInstanceOf[Graphics2D])
-  }
-
-  def paintGraphics() {
-    if(bufferedGraphics.isEmpty) println("Graphics unset!")
+    f()
     panel.paint(bufferedGraphics.get)
     panel.setVisible(true)
     bufferedGraphics = None
@@ -154,16 +150,16 @@ class Canvas {
   }
 
   def deletePoint(p: Point) {
-    prepareGraphics()
-    linesWithPoint(points.head).foreach({ l =>
-      eraseLine(l)
-      lines = lines filterNot (_ == l)
-    })
-    eraseCircle(points.head)
-    points = points filterNot (_ == p)
-    drawLines()
-    drawCircles()
-    paintGraphics()
+    bufferedDraw { () =>
+      linesWithPoint(points.head).foreach({ l =>
+        eraseLine(l)
+        lines = lines filterNot (_ == l)
+      })
+      eraseCircle(points.head)
+      points = points filterNot (_ == p)
+      drawLines()
+      drawCircles()
+    }
   }
 
   def clickEmptyArea(x: Int, y: Int) {
