@@ -39,8 +39,7 @@ class WitchcraftGame (s: Map[Boolean, Int],
     }
     val newTurnPoints = availableTurnPoints - pointsWasted
     val newGamePoints = availableGamePoints(player) - pointsWasted
-    val newSpells = Map(!player -> spells(!player),
-                        player -> ((f, points, intersec) :: spells(player)))
+    val newSpells = spells.updated(player, ((f, points, intersec) :: spells(player)))
     if(newTurnPoints < 0 || newGamePoints < 0)
       return None
     else
@@ -48,14 +47,13 @@ class WitchcraftGame (s: Map[Boolean, Int],
                          newSpells,
                          player,
                          newTurnPoints,
-                         Map(!player -> availableGamePoints(!player),
-                             player -> newGamePoints)))
+                         availableGamePoints.updated(player, newGamePoints)))
   }
   def commit: WitchcraftGame ={
     val availGP = (
       if(availableTurnPoints > 0)
-        Map(!player -> availableGamePoints(!player),
-            player -> (availableGamePoints(player) - availableTurnPoints))
+        availableGamePoints.updated(player,
+                                    availableGamePoints(player) - availableTurnPoints)
       else availableGamePoints)
 
     if(player) 
