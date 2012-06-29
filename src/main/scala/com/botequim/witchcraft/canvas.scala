@@ -11,7 +11,7 @@ class Canvas(canvasSize: Int) {
   var lines: List[Line] = Nil
   var timeStamp = -1L
   var circle = false
-  val circleSize = 30
+  val circleSize = (canvasSize * 0.10).toInt
   var points: List[Point] = Nil
   var colorsMap: Map[Point, Color] = Map()
   var formReadyListener: Option[() => Unit] = None
