@@ -2,25 +2,46 @@ package com.botequim.witchcraft
 
 import scala.swing._
 import java.awt.Dimension
-import javax.swing.{JPanel, BorderFactory}
+import javax.swing.{JPanel, BorderFactory, Box, JComponent}
 import rules.{Form, Spell, WitchcraftGame}
 import java.awt.{Color}
 import com.botequim.ZebraJList
 
-object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
-  val windowSize = new Dimension(640, 450)
+object WitchcraftApp extends SimpleSwingApplication {
+  val windowSize = new Dimension(700, 700)
   val playerNames = Map(true -> "A", false -> "B")
   val victoryLabel = new Label()
   val scores = List(
     (new Label("Player " + playerNames(true) + ":"), new Label("")),
     (new Label("Player " + playerNames(false) + ":"), new Label("")))
-  val nextForm = new Button(Action("Next Figure")(addForm))
-  val commitButton = new Button(Action("Commit")(doCommit))
+  val nextForm = new Button(Action("Next Figure")(board.addForm))
+  val commitButton = new Button(Action("Commit")(board.doCommit))
   val availTPointsLabel = new Label("")
   val spellList = ListView.wrap[Spell](new ZebraJList())
   val yourSpell = new Label()
   val enemySpell = new Label()
   val exitButton = new Button(Action("Exit")(onExit))
+  val cSize = (windowSize.height * 0.7) toInt
+  val board: WitchcraftBoard = new WitchcraftBoard {
+    override lazy val canvas = new Canvas(cSize)
+    def changeScore(sa: String, sb: String) {
+      scores(0)._2.text = sa
+      scores(1)._2.text = sb
+    }
+
+    def changeTPoints(tp: String) {
+      availTPointsLabel.text = tp
+    }
+
+    def addSpellToList(s: Spell) {
+      spellList.listData +:= s
+    }
+
+    def clearSpellList() {
+      spellList.listData = Seq()
+    }
+  
+  }
 
   def formReady() {
     nextForm.enabled = true
@@ -30,23 +51,6 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
     nextForm.enabled = false    
   }
 
-  def changeScore(sa: String, sb: String) {
-    scores(0)._2.text = sa
-    scores(1)._2.text = sb
-  }
-
-  def changeTPoints(tp: String) {
-    availTPointsLabel.text = tp
-  }
-
-  def addSpellToList(s: Spell) {
-    spellList.listData +:= s
-  }
-
-  def clearSpellList() {
-    spellList.listData = Seq()
-  }
-
   def onExit() {
     top.close()
     System.exit(0);
@@ -54,31 +58,32 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
 
   def actionPanel = {
     val jpanel = new JPanel()
-    jpanel.add(canvas.panel)
+    jpanel.add(board.canvas.panel)
     new BoxPanel(Orientation.Vertical) {
+      contents += scorePanel
       contents += Component.wrap(jpanel)
     }
 
   }
 
-  def top = new MainFrame {
+  val top = new MainFrame {
     title = "Witchcraft"
-//    maximumSize = windowSize
+    maximumSize = windowSize
     minimumSize = windowSize
+    preferredSize = windowSize
+    resizable = false
     nextForm.enabled = false
     commitButton.enabled = true
-    canvas.formReadyListener = Option(formReady)
-    canvas.boardClearedListener = Option(boardCleared)
+    board.canvas.formReadyListener = Option(formReady)
+    board.canvas.boardClearedListener = Option(boardCleared)
     scores(0)._2.text = WitchcraftGame.initialPoints.toString
     scores(1)._2.text = WitchcraftGame.initialPoints.toString
     availTPointsLabel.text = WitchcraftGame.pointsPTurnLimit.toString
     contents = new BorderPanel {
       import BorderPanel.Position._
-      add(scorePanel, North)
       add(controlsPanel, East)
       add(actionPanel, Center)
-      add(spellListPanel, West)
-      add(exitButton, South)
+      add(spellListPanel, South)
     }
   }
 
@@ -87,11 +92,16 @@ object WitchcraftApp extends SimpleSwingApplication with WitchcraftBoard {
     val w = 130
     nextForm.preferredSize = new Dimension(w, h)
     commitButton.preferredSize = new Dimension(w, h)
+    exitButton.preferredSize = new Dimension(w, h)
     nextForm.maximumSize = new Dimension(w, h)
     commitButton.maximumSize = new Dimension(w, h)
+    exitButton.maximumSize = new Dimension(w, h)
+    val box = Box.createRigidArea(new Dimension(0,100))
     contents ++ List(
       nextForm,
-      commitButton
+      commitButton,
+      Component.wrap(box.asInstanceOf[JComponent]),
+      exitButton
     )
   }
 

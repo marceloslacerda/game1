@@ -7,7 +7,7 @@ import rules.Form._
 
 trait WitchcraftBoard {
   var gameStates = Stack(WitchcraftGame())
-  val canvas = new Canvas()
+  lazy val canvas = new Canvas()
   def changeScore(sa: String, sb: String): Unit
   def changeTPoints(tp: String): Unit
   def addSpellToList(s: Spell): Unit

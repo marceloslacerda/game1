@@ -4,7 +4,7 @@ import java.awt.{Graphics2D, Color, Rectangle}
 import java.awt.geom.Line2D
 import java.awt.event.{MouseListener, MouseEvent, MouseMotionListener}
 
-class Canvas {
+class Canvas(canvasSize: Int) {
   type Point = (Int, Int)
   type Line = (Int, Int, Int, Int)
   val panel = new java.awt.Panel
@@ -19,6 +19,8 @@ class Canvas {
   var mouseReleasedListener: Option[() => Unit] = None
   var bufferedGraphics : Option[Graphics2D] = None
   setupPanel()
+
+  def this() = this(300)
 
   def clearCanvas() {
     lines.foreach(eraseLine _)
@@ -179,7 +181,7 @@ class Canvas {
   }
 
   def setupPanel() {
-    panel.setPreferredSize(new java.awt.Dimension(300, 300))
+    panel.setPreferredSize(new java.awt.Dimension(canvasSize, canvasSize))
     panel.setBackground(Color.white)
     panel.addMouseListener(new MouseListener {
       def mouseClicked(e: MouseEvent) {
