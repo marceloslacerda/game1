@@ -1,24 +1,31 @@
-package com.botequim.witchcraft
+package com.botequim.witchcraft.swing
 
 import scala.swing.Panel
 import collection.immutable.Stack
-import rules.{WitchcraftGame, Spell}
-import rules.Form._
+import com.botequim.witchcraft.rules.{WitchcraftGame, Spell, Form}
+import Form._
 
 trait WitchcraftBoard {
   var gameStates = Stack(WitchcraftGame())
   lazy val canvas = new Canvas()
-  def changeScore(sa: String, sb: String): Unit
+  val spellPanel = new SpellPanel()
   def changeTPoints(tp: String): Unit
-  def addSpellToList(s: Spell): Unit
-  def clearSpellList(): Unit
-  canvas.mouseReleasedListener = Option({() => changeTPoints(
-    availTPoints.toString)})
+  canvas.mouseReleasedListener = Option({() => 
+    changeTPoints(availTPoints.toString)
+    if(spellPanel.aftermath) spellPanel.clearSpells()
+  })
 
   def formType: Form ={
     if(canvas.circle) Circle
     else if(canvas.intersectionTotal > 0) Concave
     else Convex
+  }
+
+  def addSpellToList(s: Spell) {
+    spellPanel.addSpell(s, gameStates.head.player)
+  }
+  def clearSpellList() {
+    spellPanel.clearSpells()
   }
 
   def availTPoints =
@@ -32,10 +39,11 @@ trait WitchcraftBoard {
 
     gameStates = Stack(current)
     
-    changeScore(current.availableGamePoints(true).toString,
-                current.availableGamePoints(false).toString)
-    changeTPoints(current.availableTurnPoints.toString)
-    clearSpellList()
+    if(gameStates.head.player) {
+      spellPanel.aftermath = true
+      spellPanel.updateScore(current)
+      gameStates = Stack(current.getAftermath)      
+    }
   }
 
   def addForm() {

@@ -55,38 +55,43 @@ class WitchcraftGame (s: Map[Boolean, Int],
         availableGamePoints.updated(player,
                                     availableGamePoints(player) - availableTurnPoints)
       else availableGamePoints)
-
-    if(player) 
-      new WitchcraftGame(score,
+    new WitchcraftGame(score,
                    spells,
                    !player,
                    pointsPTurnLimit,
                    availGP)
-    else
-      getAftermath
+  }
+
+  def getAftermathCalculus(player: Boolean): Map[String, Double] ={
+    val rA = spells(player).getTurnResult
+    val rB = spells(!player).getTurnResult
+    val aPoints = availableGamePoints(player)
+    import Spell._
+    val bAtk = getAttackPower(rB)
+    val aRefl = getReflectPower(rA)
+    val partialB = (bAtk * aRefl)
+    val aDef = getDefensePower(rA)
+    val finalB = partialB - aDef
+    val finalA = aPoints - finalB
+    Map("pPoints" -> aPoints,
+        "eAtk" -> bAtk,
+        "pRefl" -> aRefl,
+        "ePartial" -> partialB,
+        "pDef" -> aDef,
+        "eFinal" -> finalB,
+        "pFinal" -> finalA,
+        "pCharge" -> getChargeLevel(rA))
   }
 
   def getAftermath: WitchcraftGame ={
-    import Spell._
-    val rA = spells(true).getTurnResult
-    val rB = spells(false).getTurnResult
-    
-    val damageTakenA = (
-      getAttackPower(rB)
-      * (1.0f - getReflectPower(rA))
-      - getDefensePower(rA))
-    val damageTakenB = (
-      getAttackPower(rA)
-      * (1.0f-getReflectPower(rB))
-      - getDefensePower(rB))
+    val resultA = getAftermathCalculus(true)
+    val resultB = getAftermathCalculus(false)
     var newGamePoints = Map(
-      true -> (availableGamePoints(true)
-      - damageTakenA),
-      false -> (availableGamePoints(true)
-      - damageTakenB))
+      true -> resultA("pFinal").toFloat,
+      false -> resultB("pFinal").toFloat)
     val newSpells = Map(
-      true -> Spell(getChargeLevel(rA)),
-      false -> Spell(getChargeLevel(rB)))
+      true -> Spell(resultA("pCharge").toInt),
+      false -> Spell(resultB("pCharge").toInt))
     val (addA, addB) =
       (newGamePoints(true), newGamePoints(false)) match {
         case (0.f, 0.f) => (0, 0)
@@ -95,7 +100,7 @@ class WitchcraftGame (s: Map[Boolean, Int],
         case (_, _) => (0, 0)
       }
 
-    if(!newGamePoints.keys.forall(newGamePoints(_) > 0))
+    if(!(newGamePoints.keys forall {newGamePoints(_) > 0}))
       newGamePoints = Map(true -> initialPoints,
                           false -> initialPoints)
 
@@ -103,7 +108,7 @@ class WitchcraftGame (s: Map[Boolean, Int],
                        false -> (score(false) + addB))
     new WitchcraftGame(newScore,
                        newSpells,
-                       !player,
+                       player,
                        pointsPTurnLimit,
                        newGamePoints)
   }
@@ -127,9 +132,9 @@ object Spell {
   def getDefensePower(comb: Map[Effect, Int]) =
     comb(Defense).toFloat
   def getReflectPower(comb: Map[Effect, Int]) =
-    (1 to comb(Reflect)).map(i => {
+    (1. - (1 to comb(Reflect)).map({i =>
       1./math.pow(2., i)
-    }).sum.toFloat
+    }).sum)
   def getChargeLevel(comb: Map[Effect, Int]) =
     comb(Charge)
 }
@@ -212,10 +217,6 @@ class Spell(mult: Int, comb: List[(Effect, Int)]) {
   }
 
   override def toString(): String = {
-    import Spell._
-    val mcomb = getTurnResult
-    (comb.head.toString + " total attack: " + getAttackPower(mcomb).toString
-     + " total defense: " + getDefensePower(mcomb).toString + " total reflect: " + getReflectPower(mcomb).toString
-     + " total charge: " + getChargeLevel(mcomb).toString)
+    comb.head._1 + ": " + comb.head._2
   }
 }

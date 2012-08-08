@@ -1,4 +1,4 @@
-package com.botequim.witchcraft
+package com.botequim.witchcraft.swing
 
 import java.awt.{Graphics2D, Color, Rectangle}
 import java.awt.geom.Line2D
@@ -11,7 +11,8 @@ class Canvas(canvasSize: Int) {
   var lines: List[Line] = Nil
   var timeStamp = -1L
   var circle = false
-  val circleSize = (canvasSize * 0.10).toInt
+  val bigCircleSize = (canvasSize * 0.10).toInt
+  val smallCircleSize = 30
   var points: List[Point] = Nil
   var colorsMap: Map[Point, Color] = Map()
   var formReadyListener: Option[() => Unit] = None
@@ -57,10 +58,10 @@ class Canvas(canvasSize: Int) {
 
   def drawCircleWithColor(p: Point, c: Color) {
     val (x, y) = p
-    drawAnyCircle(x - circleSize / 2,
-                  y - circleSize / 2,
-                  circleSize,
-                  circleSize, c)
+    drawAnyCircle(x - smallCircleSize / 2,
+                  y - smallCircleSize / 2,
+                  smallCircleSize,
+                  smallCircleSize, c)
   }
 
   def drawCircle(p: Point) {
@@ -72,10 +73,10 @@ class Canvas(canvasSize: Int) {
   }
 
   def drawBigCircleWithColor(c: Color) {
-    drawAnyCircle(circleSize,
-                  circleSize,
-                  circleSize * 8,
-                  circleSize * 8, c)
+    drawAnyCircle(bigCircleSize,
+                  bigCircleSize,
+                  bigCircleSize * 8,
+                  bigCircleSize * 8, c)
   }
 
   def drawBigCircle() {
@@ -229,9 +230,9 @@ class Canvas(canvasSize: Int) {
   
   def containsPoint(p: Point, e: MouseEvent): Boolean = {
     val (x, y) = p
-    new Rectangle(x - circleSize / 2,
-                  y - circleSize / 2,
-                  circleSize, circleSize).contains(
+    new Rectangle(x - smallCircleSize / 2,
+                  y - smallCircleSize / 2,
+                  smallCircleSize, smallCircleSize).contains(
       e.getX, e.getY)
   }
 
