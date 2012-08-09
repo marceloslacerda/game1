@@ -72,7 +72,7 @@ class WitchcraftGame (s: Map[Boolean, Int],
     val partialB = (bAtk * aRefl)
     val aDef = getDefensePower(rA)
     val finalB = partialB - aDef
-    val finalA = aPoints - finalB
+    val finalA = aPoints - (if(finalB < 0) 0 else finalB)
     Map("pPoints" -> aPoints,
         "eAtk" -> bAtk,
         "pRefl" -> aRefl,
