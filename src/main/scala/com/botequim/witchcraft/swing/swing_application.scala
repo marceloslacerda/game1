@@ -68,27 +68,40 @@ object WitchcraftApp extends SimpleSwingApplication {
   def controlsPanel = new BoxPanel(Orientation.Vertical) {
     val h = commitButton.preferredSize.height
     val w = 130
+    val apPanel = availPointsPanel
+
     nextForm.preferredSize = (w, h)
     commitButton.preferredSize = (w, h)
     exitButton.preferredSize = (w, h)
+    apPanel.preferredSize = (w, apPanel.preferredSize.height)
     nextForm.maximumSize = (w, h)
     commitButton.maximumSize = (w, h)
     exitButton.maximumSize = (w, h)
+    apPanel.maximumSize = (w, apPanel.maximumSize.height)
+
+    nextForm.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
+    commitButton.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
+    apPanel.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
+    exitButton.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
     
     contents ++ List(
       RigidBox((0,h+11)),
       nextForm,
       commitButton,
+      RigidBox((0,h+11)),
+      apPanel,
       VGlue,
       exitButton,
       RigidBox((0,h))
     )
   }
 
-
-  def availPointsPanel = new BoxPanel(Orientation.Horizontal) {
+  def availPointsPanel = new BoxPanel(Orientation.Vertical) {
+    val descLabel = new Label("Available points")
+    descLabel.peer.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT)
+    availTPointsLabel.peer.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT)
     contents ++ List(
-      new Label("Available points:"),
+      descLabel,
       availTPointsLabel
     )
   }
