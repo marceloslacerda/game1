@@ -97,11 +97,9 @@ object WitchcraftApp extends SimpleSwingApplication {
   }
 
   def availPointsPanel = new BoxPanel(Orientation.Vertical) {
-    val descLabel = new Label("Available points")
-    descLabel.peer.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT)
     availTPointsLabel.peer.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT)
+    border = Swing.TitledBorder(Swing.LineBorder(java.awt.Color.black), "Available points")
     contents ++ List(
-      descLabel,
       availTPointsLabel
     )
   }
