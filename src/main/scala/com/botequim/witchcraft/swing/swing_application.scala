@@ -15,7 +15,8 @@ object WitchcraftApp extends SimpleSwingApplication {
   val availTPointsLabel = new Label("")
   val yourSpell = new Label()
   val enemySpell = new Label()
-  val exitButton = new Button(Action("Exit")(onExit))
+  def eBMaker = new Button(Action("Exit")(onExit))
+  val exitButton = eBMaker
   val cSize = (windowSize.height * 0.70) toInt
   val board: WitchcraftBoard = new WitchcraftBoard {
     override lazy val canvas = new Canvas(cSize)
@@ -58,11 +59,17 @@ object WitchcraftApp extends SimpleSwingApplication {
     board.canvas.formReadyListener = Option(formReady)
     board.canvas.boardClearedListener = Option(boardCleared)
     availTPointsLabel.text = WitchcraftGame.pointsPTurnLimit.toString
-    contents = new BorderPanel {
+    val gamePanel = new BorderPanel {
       import BorderPanel.Position._
       add(controlsPanel, East)
       add(actionPanel, Center)
     }
+    def playAction(){
+      println("Hello")
+      contents = gamePanel
+    }
+    val menu = new Menu(List(new Button(Action("Two Player")(playAction)), eBMaker))
+    contents = menu.component
   }
 
   def controlsPanel = new BoxPanel(Orientation.Vertical) {
