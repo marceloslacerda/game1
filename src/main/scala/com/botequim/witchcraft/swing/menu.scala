@@ -8,7 +8,7 @@ import javax.swing.{JPanel, JLabel}
 import net.miginfocom.swing.MigLayout
 
 class Menu(buttons: List[Button]) {
-  val panel = new JPanel(new MigLayout("fillx, debug"))
+  val panel = new JPanel(new MigLayout("fillx"))
   val buttonsPanel = new JPanel(new MigLayout("filly"))
   buttonsPanel.add(new JLabel(""), "growy,wrap")
   buttons.foreach { i: Button =>

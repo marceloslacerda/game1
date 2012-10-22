@@ -47,6 +47,18 @@ object WitchcraftApp extends SimpleSwingApplication {
     }
 
   }
+  
+  def playAction(){
+    top.contents = gamePanel
+  }
+
+  def gamePanel = new BorderPanel {
+      import BorderPanel.Position._
+      add(controlsPanel, East)
+      add(actionPanel, Center)
+  }
+
+  def menu = new Menu(List(new Button(Action("Single player")()), new Button(Action("Two Player")(playAction)), eBMaker))
 
   val top = new MainFrame {
     title = "Witchcraft"
@@ -59,18 +71,10 @@ object WitchcraftApp extends SimpleSwingApplication {
     board.canvas.formReadyListener = Option(formReady)
     board.canvas.boardClearedListener = Option(boardCleared)
     availTPointsLabel.text = WitchcraftGame.pointsPTurnLimit.toString
-    val gamePanel = new BorderPanel {
-      import BorderPanel.Position._
-      add(controlsPanel, East)
-      add(actionPanel, Center)
-    }
-    def playAction(){
-      println("Hello")
-      contents = gamePanel
-    }
-    val menu = new Menu(List(new Button(Action("Two Player")(playAction)), eBMaker))
+
     contents = menu.component
   }
+
 
   def controlsPanel = new BoxPanel(Orientation.Vertical) {
     val h = commitButton.preferredSize.height
