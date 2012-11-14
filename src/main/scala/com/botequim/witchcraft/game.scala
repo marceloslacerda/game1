@@ -50,22 +50,22 @@ class WitchcraftGame (s: Map[Boolean, Int],
                          availableGamePoints.updated(player, newGamePoints)))
   }
   def commit: WitchcraftGame ={
-    val availGP = (
+/*    val availGP = (
       if(availableTurnPoints > 0)
         availableGamePoints.updated(player,
                                     availableGamePoints(player) - availableTurnPoints)
-      else availableGamePoints)
+      else availableGamePoints)*/
     new WitchcraftGame(score,
                    spells,
                    !player,
                    pointsPTurnLimit,
-                   availGP)
+                   availableGamePoints)
   }
 
   def getAftermathCalculus(player: Boolean): Map[String, Double] ={
     val rA = spells(player).getTurnResult
     val rB = spells(!player).getTurnResult
-    val aPoints = availableGamePoints(player)
+    val aPoints = availableGamePoints(player) - pointsPTurnLimit
     import Spell._
     val bAtk = getAttackPower(rB)
     val aRefl = getReflectPower(rA)

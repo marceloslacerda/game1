@@ -7,6 +7,7 @@ import Form._
 
 trait WitchcraftBoard {
   var gameStates = Stack(WitchcraftGame())
+  var ai: Option[com.botequim.witchcraft.ai.AI] = None
   lazy val canvas = new Canvas()
   val spellPanel = new SpellPanel()
   def changeTPoints(tp: String): Unit
@@ -35,30 +36,33 @@ trait WitchcraftBoard {
   def doCommit() {
     addForm()
     gameStates = Stack(gameStates.head.commit)
-    val current = gameStates.head
 
-    gameStates = Stack(current)
-    
+    if(!ai.isEmpty) {
+      aiMove()
+    }
+
     if(gameStates.head.player) {
+      val current = gameStates.head
       spellPanel.aftermath = true
       spellPanel.updateScore(current)
       gameStates = Stack(current.getAftermath)      
     }
   }
 
+  def aiMove() {
+    gameStates = gameStates push ai.get.getMove(gameStates.head)
+  }
+
   def addForm() {
     val current = gameStates.head
     val newOptionalState = formType match {
       case Circle => {
-        println(formType)
         current.compose(Circle, 0, 0)
       }
       case Convex => {
-        println(formType, canvas.points.size, 0)
         current.compose(Convex, canvas.points.size, 0)
       }
       case Concave => {
-        println(formType, canvas.points.size, canvas.intersectionTotal)
         current.compose(Concave,
                         canvas.points.size,
                         canvas.intersectionTotal)

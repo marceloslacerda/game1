@@ -104,6 +104,6 @@ class SpellSuite extends FunSuite {
     var comb = ((Circle, 0, 0) :: Spell(0)).getTurnResult
     assert(.5f === Spell.getReflectPower(comb))
     comb = ((Circle, 0, 0) :: Spell(1)).getTurnResult 
-    assert(.75f === Spell.getReflectPower(comb))
+    assert(.25f === Spell.getReflectPower(comb))
   }
 }

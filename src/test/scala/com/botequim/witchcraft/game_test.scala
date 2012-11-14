@@ -50,7 +50,7 @@ account the reflection shield.""") {
                               10.f,
                               Map(true -> 88.f, false -> 88.f))
     game = game.getAftermath
-    assert(game.availableGamePoints(game.player) === 84.f)
+    assert(game.availableGamePoints(!game.player) === 74.f)
   }
 
   test("""The getAftermath resets the initial points automatically.""") {
