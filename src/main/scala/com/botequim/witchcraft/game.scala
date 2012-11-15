@@ -49,18 +49,12 @@ class WitchcraftGame (s: Map[Boolean, Int],
                          newTurnPoints,
                          availableGamePoints.updated(player, newGamePoints)))
   }
-  def commit: WitchcraftGame ={
-/*    val availGP = (
-      if(availableTurnPoints > 0)
-        availableGamePoints.updated(player,
-                                    availableGamePoints(player) - availableTurnPoints)
-      else availableGamePoints)*/
+  def commit: WitchcraftGame =
     new WitchcraftGame(score,
                    spells,
                    !player,
                    pointsPTurnLimit,
                    availableGamePoints)
-  }
 
   def getAftermathCalculus(player: Boolean): Map[String, Double] ={
     val rA = spells(player).getTurnResult
@@ -162,7 +156,7 @@ class Spell(mult: Int, comb: List[(Effect, Int)]) {
   def getTurnResult: Map[Effect, Int] = {
     val combination = comb.reverse
     var result: Map[Effect, Int] = Map()
-    val multiplier = math.pow(2, multLvl).toInt
+    val multiplier = multLvl + 1
     //First off, reflect
     result += Reflect ->
                ((
@@ -179,14 +173,14 @@ class Spell(mult: Int, comb: List[(Effect, Int)]) {
       r ++= prev.filterKeys(k=>{k != Attack && k != Defense})
       //Next is attack
       r += Attack -> (prev.get(Attack).getOrElse(0) +
-                 comb.takeWhile(
-                   _._1 != Charge).filter(
-                   _._1 == Attack).map(_._2 * m).sum)
+                 comb.takeWhile(_._1 != Charge)
+                     .filter(_._1 == Attack)
+                     .map(_._2 * m).sum)
       //Then defense
       r += Defense -> (prev.get(Defense).getOrElse(0) +
-                 comb.takeWhile(
-                   _._1 != Charge).filter(
-                   _._1 == Defense).map(_._2 * m).sum)
+                 comb.takeWhile(_._1 != Charge)
+                     .filter(_._1 == Defense)
+                     .map(_._2 * m).sum)
       r
     }
 
@@ -208,7 +202,7 @@ class Spell(mult: Int, comb: List[(Effect, Int)]) {
     var charged = getFChargedSection(combination)
     var m = multiplier
     while(!charged.isEmpty) {
-      m *= math.pow(2, charged.takeWhile(_._1 == Charge).map(_._2).sum).toInt
+      m += charged.takeWhile(_._1 == Charge).map(i => 1).sum
       charged = charged.dropWhile(_._1 == Charge)
       result = calcAttackDefense(charged, m, result)
       charged = getFChargedSection(charged)
