@@ -29,9 +29,10 @@ class WitchcraftGame (s: Map[Boolean, Int],
   def currentSpell = spells(player)
 
   def compose(f: Form, points: Int, intersec: Int): Option[WitchcraftGame] ={
-    if(points < 3 && f == Convex)
-      return None
-    else if(points < 4 && f == Concave)
+    if(points < 3 && f == Convex ||
+       points < 4 && f == Concave ||
+       points == 4 && f == Concave && intersec > 1 ||
+       f == Concave && points < intersec)
       return None
     val pointsWasted = f match {
       case Circle => 1
