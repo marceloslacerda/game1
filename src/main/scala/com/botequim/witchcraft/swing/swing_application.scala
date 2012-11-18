@@ -103,6 +103,7 @@ object WitchcraftApp extends SimpleSwingApplication {
     contents ++ List(
       RigidBox((0,h+11)),
       nextForm,
+      RigidBox((0,h+11)),
       commitButton,
       RigidBox((0,h+11)),
       apPanel,
