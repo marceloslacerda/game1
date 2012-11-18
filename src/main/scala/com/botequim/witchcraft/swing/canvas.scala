@@ -18,6 +18,7 @@ class Canvas(canvasSize: Int) {
   var formReadyListener: Option[() => Unit] = None
   var boardClearedListener: Option[() => Unit] = None
   var mouseReleasedListener: Option[() => Unit] = None
+  var undoListener: Option[() => Unit] = None
   var bufferedGraphics : Option[Graphics2D] = None
   setupPanel()
 
@@ -195,6 +196,9 @@ class Canvas(canvasSize: Int) {
             }
           }
           case MouseEvent.BUTTON3 => {
+            if(points.isEmpty) {
+              undoListener foreach {_.apply()}
+            }
             if(!points.isEmpty) {
               deletePoint(points.head)
             }
@@ -202,8 +206,6 @@ class Canvas(canvasSize: Int) {
               eraseBigCircle()
               circle = false
             }
-            if(points.isEmpty)
-              boardClearedListener foreach {_.apply()}
           }
           case _ =>
         }

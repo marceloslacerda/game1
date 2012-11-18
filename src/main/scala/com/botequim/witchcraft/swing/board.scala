@@ -15,6 +15,13 @@ trait WitchcraftBoard {
     changeTPoints(availTPoints.toString)
     if(spellPanel.aftermath) spellPanel.clearSpells()
   })
+  canvas.undoListener = Option({() =>
+    if(gameStates.length > 1) {
+      gameStates = gameStates.pop
+      spellPanel.popSpell(gameStates.head.player)
+      changeTPoints(availTPoints.toString)
+    }
+  })
 
   def formType: Form ={
     if(canvas.circle) Circle
@@ -50,7 +57,7 @@ trait WitchcraftBoard {
   }
 
   def aiMove() {
-    gameStates = gameStates push ai.get.getMove(gameStates.head)
+    gameStates = Stack(ai.get.getMove(gameStates.head))
     val aiBol = !gameStates.head.player
     gameStates.head.spells(aiBol)
       .toStringList foreach {i => spellPanel.addSpell(i, aiBol)}

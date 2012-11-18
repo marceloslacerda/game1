@@ -95,6 +95,15 @@ class SpellPanel extends BorderPanel {
     }
   }
 
+def popSpell(p: Boolean) {
+    if(p) {
+      spellA.listData = spellA.listData.init
+    }
+    else {
+      spellB.listData = spellB.listData.init
+    }
+  }
+
   def clearSpells() {
     spellA.listData = Seq()
     spellB.listData = Seq()
