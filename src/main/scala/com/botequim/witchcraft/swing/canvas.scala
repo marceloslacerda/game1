@@ -207,6 +207,7 @@ class Canvas(canvasSize: Int) {
           }
           case _ =>
         }
+        mouseReleasedListener foreach {_.apply()}
       }
       def mouseEntered(e: MouseEvent) {}
       def mouseExited(e: MouseEvent) {}
