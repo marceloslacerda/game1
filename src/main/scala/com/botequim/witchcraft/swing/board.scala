@@ -23,7 +23,7 @@ trait WitchcraftBoard {
   }
 
   def addSpellToList(s: Spell) {
-    spellPanel.addSpell(s, gameStates.head.player)
+    spellPanel.addSpell(s.toString, gameStates.head.player)
   }
   def clearSpellList() {
     spellPanel.clearSpells()
@@ -51,6 +51,9 @@ trait WitchcraftBoard {
 
   def aiMove() {
     gameStates = gameStates push ai.get.getMove(gameStates.head)
+    val aiBol = !gameStates.head.player
+    gameStates.head.spells(aiBol)
+      .toStringList foreach {i => spellPanel.addSpell(i, aiBol)}
   }
 
   def addForm() {

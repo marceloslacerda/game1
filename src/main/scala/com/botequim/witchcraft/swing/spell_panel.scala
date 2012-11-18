@@ -9,7 +9,7 @@ import net.miginfocom.swing.MigLayout
 class SpellPanel extends BorderPanel {
   var aftermath = false
   var pGame: WitchcraftGame = WitchcraftGame()
-  val spellA = ListView.wrap[Spell](new ZebraJList())
+  val spellA = ListView.wrap[String](new ZebraJList())
   val aFields = (new Label("B attack"),    new Label("10")) ::
                 (new Label("A relfect"),   new Label("50%")) ::
                 (new Label("B parcial"),   new Label("5")) ::
@@ -17,7 +17,7 @@ class SpellPanel extends BorderPanel {
                 (new Label("B final"),     new Label("1")) ::
                 (new Label("A remainder"), new Label("99")) ::
                 (new Label("Charge"),      new Label("1")) :: Nil
-  val spellB = ListView.wrap[Spell](new ZebraJList())
+  val spellB = ListView.wrap[String](new ZebraJList())
   val bFields = (new Label("A attack"),    new Label("10")) ::
                 (new Label("B relfect"),   new Label("50%")) ::
                 (new Label("A parcial"),   new Label("5")) ::
@@ -38,7 +38,7 @@ class SpellPanel extends BorderPanel {
                    new Label("+") :: Nil
 
   def scorePanel(fieldList: List[(Label, Label)],
-                 spellPanel: ListView[Spell])
+                 spellPanel: ListView[String])
    = new BoxPanel(Orientation.Horizontal) {
     val lPanel = new BoxPanel(Orientation.Vertical)
     fieldList foreach { lPanel.contents += _._1 }
@@ -86,7 +86,7 @@ class SpellPanel extends BorderPanel {
 
   add(Component.wrap(dividedPanel), Center)
 
-  def addSpell(s: Spell, p: Boolean) {
+  def addSpell(s: String, p: Boolean) {
     if(p) {
       spellA.listData :+= s
     }
