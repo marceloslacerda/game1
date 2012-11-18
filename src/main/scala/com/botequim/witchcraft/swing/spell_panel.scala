@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout
 
 class SpellPanel extends BorderPanel {
   var aftermath = false
+  var pGame: WitchcraftGame = WitchcraftGame()
   val spellA = ListView.wrap[Spell](new ZebraJList())
   val aFields = (new Label("B attack"),    new Label("10")) ::
                 (new Label("A relfect"),   new Label("50%")) ::
@@ -100,6 +101,8 @@ class SpellPanel extends BorderPanel {
     panelA.visible = false
     panelB.visible = false
     aftermath = false
+    aPoints._2.text = pGame.getAftermathCalculus(true)("pFinal").toString
+    bPoints._2.text = pGame.getAftermathCalculus(false)("pFinal").toString
   }
 
   def updateScore(game: WitchcraftGame) {
@@ -120,6 +123,7 @@ class SpellPanel extends BorderPanel {
     }
     setScoreFields(aPoints, aFields, true)
     setScoreFields(bPoints, bFields, false)
+    pGame = game
     panelA.visible = true
     panelB.visible = true
   }
