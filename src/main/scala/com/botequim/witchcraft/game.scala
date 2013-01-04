@@ -14,13 +14,11 @@ object Form extends Enumeration {
 import Effect._
 import Form._
 
-class WitchcraftGame (s: Map[Boolean, Int],
-                      spe: Map[Boolean, Spell],
+class WitchcraftGame (spe: Map[Boolean, Spell],
                       play: Boolean,
                       availT: Float,
                       availG: Map[Boolean, Float]){
   import WitchcraftGame.{pointsPTurnLimit, initialPoints}
-  val score = s
   val player = play
   val spells = spe
   val availableTurnPoints = availT
@@ -39,20 +37,17 @@ class WitchcraftGame (s: Map[Boolean, Int],
       case _ => points
     }
     val newTurnPoints = availableTurnPoints - pointsWasted
-    val newGamePoints = availableGamePoints(player) - pointsWasted
     val newSpells = spells.updated(player, ((f, points, intersec) :: spells(player)))
-    if(newTurnPoints < 0 || newGamePoints < 0)
+    if(newTurnPoints < 0)
       return None
     else
-      return Some(new WitchcraftGame(score,
-                         newSpells,
+      return Some(new WitchcraftGame(newSpells,
                          player,
                          newTurnPoints,
-                         availableGamePoints.updated(player, newGamePoints)))
+                         availableGamePoints))
   }
   def commit: WitchcraftGame =
-    new WitchcraftGame(score,
-                   spells,
+    new WitchcraftGame(spells,
                    !player,
                    pointsPTurnLimit,
                    availableGamePoints)
@@ -67,7 +62,7 @@ class WitchcraftGame (s: Map[Boolean, Int],
     val partialB = (bAtk * aRefl)
     val aDef = getDefensePower(rA)
     val finalB = partialB - aDef
-    val finalA = aPoints - (if(finalB < 0) 0 else finalB)
+    val finalA = (aPoints - finalB.max(0.)).max(0.)
     Map("pPoints" -> aPoints,
         "eAtk" -> bAtk,
         "pRefl" -> aRefl,
@@ -81,30 +76,16 @@ class WitchcraftGame (s: Map[Boolean, Int],
   def getAftermath: WitchcraftGame ={
     val resultA = getAftermathCalculus(true)
     val resultB = getAftermathCalculus(false)
-    var newGamePoints = Map(
+    val newGamePoints = Map(
       true -> resultA("pFinal").toFloat,
       false -> resultB("pFinal").toFloat)
     val newSpells = Map(
       true -> Spell(resultA("pCharge").toInt),
       false -> Spell(resultB("pCharge").toInt))
-    val (addA, addB) =
-      (newGamePoints(true), newGamePoints(false)) match {
-        case (0.f, 0.f) => (0, 0)
-        case (0.f, _) => (0, 1)
-        case (_, 0.f) => (1, 0)
-        case (_, _) => (0, 0)
-      }
-
-    if(!(newGamePoints.keys forall {newGamePoints(_) > 0}))
-      newGamePoints = Map(true -> initialPoints,
-                          false -> initialPoints)
-
-    val newScore = Map(true -> (score(true) + addA),
-                       false -> (score(false) + addB))
-    new WitchcraftGame(newScore,
-                       newSpells,
+    val newPPT = pointsPTurnLimit.min(newGamePoints(true))
+    new WitchcraftGame(newSpells,
                        player,
-                       pointsPTurnLimit,
+                       newPPT,
                        newGamePoints)
   }
 }
@@ -113,7 +94,6 @@ object WitchcraftGame {
   val pointsPTurnLimit = 10.f
   val initialPoints = 100.f
   def apply() = new WitchcraftGame(
-      Map(true -> 0, false -> 0),
       Map(true -> Spell(), false -> Spell()),
       true,
       pointsPTurnLimit,
