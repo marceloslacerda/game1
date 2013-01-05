@@ -19,7 +19,6 @@
 
 package com.botequim.witchcraft.rules
 
-
 object Effect extends Enumeration {
   type Effect = Value
   val Attack, Defense, Reflect, Charge = Value
@@ -33,15 +32,11 @@ object Form extends Enumeration {
 import Effect._
 import Form._
 
-class WitchcraftGame (spe: Map[Boolean, Spell],
-                      play: Boolean,
-                      availT: Float,
-                      availG: Map[Boolean, Float]){
-  import WitchcraftGame.{pointsPTurnLimit, initialPoints}
-  val player = play
-  val spells = spe
-  val availableTurnPoints = availT
-  val availableGamePoints = availG
+ case class WitchcraftGame (spells: Map[Boolean, Spell],
+                      player: Boolean,
+                      availableTurnPoints: Float,
+                      availableGamePoints: Map[Boolean, Float]) {
+  import WitchcraftGame.pointsPTurnLimit
 
   def currentSpell = spells(player)
 
