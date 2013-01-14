@@ -34,7 +34,7 @@ class DumbAISuite extends FunSuite with BeforeAndAfter {
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
     val child = DumbAI.child(game, reflect, mCharge, attack, defense, charge)
-    assert(child.spells(true).getTurnResult === 
+    assert(child.spells(false).getTurnResult === 
         Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
             Reflect -> eReflect))
   }
@@ -79,15 +79,14 @@ class DumbAISuite extends FunSuite with BeforeAndAfter {
 
   test("Test children") {
     val child = DumbAI.child(game, 0, 6, 4, 0, 0)
-    val eFinal = child.getAftermathCalculus(false)("pFinal")
-    val attackFinal = child.getAftermathCalculus(false)("eAtk")
+    val eFinal = child.getAftermathCalculus(true)("pFinal")
+    val attackFinal = child.getAftermathCalculus(true)("eAtk")
     assert(attackFinal === 30)    
     assert(eFinal === 60)
   }
 
   test("Test minimal move") {
-    val minimalVal = DumbAI.getMove(game).getAftermathCalculus(false)("pFinal")
-//    println(minimalVal)
+    val minimalVal = DumbAI.getMove(game).getAftermathCalculus(true)("pFinal")
     assert(minimalVal === 40)
   }
 }

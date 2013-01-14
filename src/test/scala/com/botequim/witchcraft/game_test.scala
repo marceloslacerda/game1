@@ -32,47 +32,47 @@ class WitchcraftGameSuite extends FunSuite with BeforeAndAfter {
 
   test("Compose works nicelly with many points available.") {
     val prev = game
-    var nu = getAndTestGame(game.compose(Circle, 0, 0))
+    var nu = getAndTestGame(game.compose(Circle, 0, 0, true))
     assert(nu.availableTurnPoints === prev.availableTurnPoints - 1)
-    assert(nu.spells(nu.player).combination.length
-           > prev.spells(prev.player).combination.length)
+    assert(nu.spells(true).combination.length
+           > prev.spells(true).combination.length)
 
-    nu = getAndTestGame(game.compose(Concave, 7, 7))
+    nu = getAndTestGame(game.compose(Concave, 7, 7, true))
     assert(nu.availableTurnPoints === prev.availableTurnPoints - 7)
   }
 
   test("""Compose returns a None when the number of points for each spell have
 been exceeded.""") {
-    assert(game.compose(Convex, 11, 0) === None)
+    assert(game.compose(Convex, 11, 0, true) === None)
   }
 
   test("""Compose returns a None when the number of points for the player have
 been exceeded.""") {
     game = new WitchcraftGame(Map(true -> Spell(), false -> Spell()),
-                              true,
                               0.f,
+                              Map(true -> false, false -> false),
                               Map(true -> 10.f, false -> 88.f))
-    assert(game.compose(Circle, 0, 0) === None)
+    assert(game.compose(Circle, 0, 0, true) === None)
   }
 
   test("""Game points never reaches below zero.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              false,
                               10.f,
+                              Map(true -> false, false -> false),
                               Map(true -> 4.f, false -> 88.f))
     game = game.getAftermath
-    assert(game.availableGamePoints(!game.player) === 0.f)
+    assert(game.availableGamePoints(true) === 0.f)
   }
   test("""The getAftermath causes the correct damage taking into
 account the reflection shield.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              false,
                               10.f,
+                              Map(true -> false, false -> false),
                               Map(true -> 88.f, false -> 88.f))
     game = game.getAftermath
-    assert(game.availableGamePoints(!game.player) === 74.f)
+    assert(game.availableGamePoints(true) === 74.f)
   }
 
   def getAndTestGame(o: Option[WitchcraftGame]) =

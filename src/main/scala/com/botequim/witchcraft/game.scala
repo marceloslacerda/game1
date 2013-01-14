@@ -33,14 +33,12 @@ import Effect._
 import Form._
 
  case class WitchcraftGame (spells: Map[Boolean, Spell],
-                      player: Boolean,
                       availableTurnPoints: Float,
+                      commits: Map[Boolean, Boolean],
                       availableGamePoints: Map[Boolean, Float]) {
   import WitchcraftGame.pointsPTurnLimit
 
-  def currentSpell = spells(player)
-
-  def compose(f: Form, points: Int, intersec: Int): Option[WitchcraftGame] ={
+  def compose(f: Form, points: Int, intersec: Int, player: Boolean): Option[WitchcraftGame] ={
     if(points < 3 && f == Convex ||
        points < 4 && f == Concave ||
        points == 4 && f == Concave && intersec > 1 ||
@@ -56,14 +54,15 @@ import Form._
       return None
     else
       return Some(new WitchcraftGame(newSpells,
-                         player,
                          newTurnPoints,
+                         commits,
                          availableGamePoints))
   }
-  def commit: WitchcraftGame =
+
+  def commit(player: Boolean): WitchcraftGame =
     new WitchcraftGame(spells,
-                   !player,
-                   pointsPTurnLimit,
+                   pointsPTurnLimit.min(availableGamePoints(player)),
+                   commits.updated(player, true),
                    availableGamePoints)
 
   def getAftermathCalculus(player: Boolean): Map[String, Double] ={
@@ -98,8 +97,8 @@ import Form._
       false -> Spell(resultB("pCharge").toInt))
     val newPPT = pointsPTurnLimit.min(newGamePoints(true))
     new WitchcraftGame(newSpells,
-                       player,
                        newPPT,
+                       commits,
                        newGamePoints)
   }
 }
@@ -109,8 +108,8 @@ object WitchcraftGame {
   val initialPoints = 100.f
   def apply() = new WitchcraftGame(
       Map(true -> Spell(), false -> Spell()),
-      true,
       pointsPTurnLimit,
+      Map(true -> false, false -> false),
       Map(true -> initialPoints, false -> initialPoints))
 }
 

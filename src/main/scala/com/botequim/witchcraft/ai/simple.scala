@@ -43,7 +43,7 @@ object DumbAI extends AI{
     import Form._
     var result = node
     def compose(f: Form, i: Int, j: Int){
-      result = result.compose(f, i, j).getOrElse(result)
+      result = result.compose(f, i, j, false).getOrElse(result)
     }
     if(reflect == 1) compose(Circle, 0 , 0)
     for(i <- 0 until mCharge) compose(Circle, 0, 0)
@@ -53,12 +53,12 @@ object DumbAI extends AI{
     }
     if(defense > 0) compose(Convex, defense, 0)
     for(i <- 0 until charge) compose(Circle, 0, 0)
-    result.commit
+    result.commit(false)
   }
 
   def getMove(node: Node): Node = {
-    val grouped = children(node).groupBy[Double] { n => n.getAftermathCalculus(!n.player)("pFinal") }
-    val maximal = grouped(grouped.keys.max)
-    maximal minBy { n => n.getAftermathCalculus(n.player)("pFinal")}
+    val grouped = children(node).groupBy[Double] { n => n.getAftermathCalculus(true)("pFinal") }
+    val minimal = grouped(grouped.keys.min)
+    minimal maxBy { n => n.getAftermathCalculus(true)("pFinal")}
   }
 }

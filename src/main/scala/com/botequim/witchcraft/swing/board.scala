@@ -29,6 +29,7 @@ trait WitchcraftBoard {
   var ai: Option[com.botequim.witchcraft.ai.AI] = None
   lazy val canvas = new Canvas()
   val spellPanel = new SpellPanel()
+  var player = true
   def changeTPoints(tp: String): Unit
   canvas.mouseReleasedListener = Option({() => 
     changeTPoints(availTPoints.toString)
@@ -37,7 +38,7 @@ trait WitchcraftBoard {
   canvas.undoListener = Option({() =>
     if(gameStates.length > 1) {
       gameStates = gameStates.pop
-      spellPanel.popSpell(gameStates.head.player)
+      spellPanel.popSpell(player)
       changeTPoints(availTPoints.toString)
     }
   })
@@ -49,7 +50,7 @@ trait WitchcraftBoard {
   }
 
   def addSpellToList(s: Spell) {
-    spellPanel.addSpell(s.toString, gameStates.head.player)
+    spellPanel.addSpell(s.toString, player)
   }
   def clearSpellList() {
     spellPanel.clearSpells()
@@ -61,13 +62,13 @@ trait WitchcraftBoard {
 
   def doCommit() {
     addForm()
-    gameStates = Stack(gameStates.head.commit)
-
+    gameStates = Stack(gameStates.head.commit(player))
+    player = !player
     if(!ai.isEmpty) {
       aiMove()
     }
 
-    if(gameStates.head.player) {
+    if(player) {
       val current = gameStates.head
       spellPanel.aftermath = true
       spellPanel.updateScore(current)
@@ -77,7 +78,7 @@ trait WitchcraftBoard {
 
   def aiMove() {
     gameStates = Stack(ai.get.getMove(gameStates.head))
-    val aiBol = !gameStates.head.player
+    val aiBol = !player
     gameStates.head.spells(aiBol)
       .toStringList foreach {i => spellPanel.addSpell(i, aiBol)}
   }
@@ -86,20 +87,20 @@ trait WitchcraftBoard {
     val current = gameStates.head
     val newOptionalState = formType match {
       case Circle => {
-        current.compose(Circle, 0, 0)
+        current.compose(Circle, 0, 0, player)
       }
       case Convex => {
-        current.compose(Convex, canvas.points.size, 0)
+        current.compose(Convex, canvas.points.size, 0, player)
       }
       case Concave => {
         current.compose(Concave,
                         canvas.points.size,
-                        canvas.intersectionTotal)
+                        canvas.intersectionTotal, player)
       }
     }
     if(newOptionalState != None) {
       gameStates = gameStates push newOptionalState.get
-      addSpellToList(gameStates.head.currentSpell)
+      addSpellToList(gameStates.head.spells(player))
     }
     canvas.clearCanvas()
   }
