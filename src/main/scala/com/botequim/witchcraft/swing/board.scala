@@ -20,13 +20,15 @@
 package com.botequim.witchcraft.swing
 
 import scala.swing.Panel
-import collection.immutable.Stack
+import collection.mutable.Stack
 import com.botequim.witchcraft.rules.{WitchcraftGame, Spell, Form}
 import Form._
+import com.botequim.witchcraft.ai.WitchcraftAI
 
 trait WitchcraftBoard {
-  var gameStates = Stack(WitchcraftGame())
-  var ai: Option[com.botequim.witchcraft.ai.AI] = None
+  val gameStates = Stack(WitchcraftGame())
+  val gameHistory = Stack(gameStates.head)
+  var ai: Option[WitchcraftAI] = None
   lazy val canvas = new Canvas()
   val spellPanel = new SpellPanel()
   var player = true
@@ -37,7 +39,7 @@ trait WitchcraftBoard {
   })
   canvas.undoListener = Option({() =>
     if(gameStates.length > 1) {
-      gameStates = gameStates.pop
+      gameStates.pop
       spellPanel.popSpell(player)
       changeTPoints(availTPoints.toString)
     }
@@ -60,24 +62,29 @@ trait WitchcraftBoard {
     gameStates.head.availableTurnPoints -
       (if(canvas.circle) 1 else canvas.points.size)
 
+  def clearStatesWith(g: WitchcraftGame) {
+    gameStates.elems = g :: Nil
+  }    
+
   def doCommit() {
     addForm()
-    gameStates = Stack(gameStates.head.commit(player))
+    clearStatesWith(gameStates.head.commit(player))
     player = !player
-    if(!ai.isEmpty) {
-      aiMove()
-    }
+    gameHistory push gameStates.head
+
+    ai foreach { a => aiMove(a) }
 
     if(player) {
       val current = gameStates.head
       spellPanel.aftermath = true
       spellPanel.updateScore(current)
-      gameStates = Stack(current.getAftermath)      
+      clearStatesWith(current.getAftermath)  
     }
   }
 
-  def aiMove() {
-    gameStates = Stack(ai.get.getMove(gameStates.head))
+  def aiMove(ai: WitchcraftAI) {
+    clearStatesWith(ai.getMove(gameHistory.tail))
+    gameHistory push gameStates.head
     val aiBol = !player
     gameStates.head.spells(aiBol)
       .toStringList foreach {i => spellPanel.addSpell(i, aiBol)}
@@ -99,7 +106,7 @@ trait WitchcraftBoard {
       }
     }
     if(newOptionalState != None) {
-      gameStates = gameStates push newOptionalState.get
+      gameStates push newOptionalState.get
       addSpellToList(gameStates.head.spells(player))
     }
     canvas.clearCanvas()

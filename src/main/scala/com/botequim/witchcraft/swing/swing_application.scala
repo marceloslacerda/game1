@@ -73,7 +73,12 @@ object WitchcraftApp extends SimpleSwingApplication {
 
   def playSingle(){
     top.contents = gamePanel
-    board.ai = Option(com.botequim.witchcraft.ai.DumbAI)
+    board.ai = Option(com.botequim.witchcraft.ai.FortuneAI)
+  }
+
+  def playExperimental(){
+    top.contents = gamePanel
+    board.ai = Option(com.botequim.witchcraft.ai.MinimaxAI)
   }
 
   def gamePanel = new BorderPanel {
@@ -82,7 +87,11 @@ object WitchcraftApp extends SimpleSwingApplication {
       add(actionPanel, Center)
   }
 
-  def menu = new Menu(List(new Button(Action("Single player")(playSingle)), new Button(Action("Two Player")(playTwo)), eBMaker))
+  def menu = new Menu(List(
+    new Button(Action("Single player")(playSingle)),
+    new Button(Action("Experimental Single Player")(playExperimental)),
+    new Button(Action("Two Player")(playTwo)),
+    eBMaker))
 
   val top = new MainFrame {
     title = "Witchcraft"

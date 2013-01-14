@@ -24,7 +24,7 @@ import com.botequim.witchcraft.rules.{WitchcraftGame, Effect}
 import Effect._
 
 
-class DumbAISuite extends FunSuite with BeforeAndAfter {
+class FortuneAISuite extends FunSuite with BeforeAndAfter {
   var game: WitchcraftGame = _
 
   before {
@@ -33,7 +33,7 @@ class DumbAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val child = DumbAI.child(game, reflect, mCharge, attack, defense, charge)
+    val child = FortuneAI.child(game, reflect, mCharge, attack, defense, charge)
     assert(child.spells(false).getTurnResult === 
         Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
             Reflect -> eReflect))
@@ -71,14 +71,14 @@ class DumbAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test combinations") {
-    assert(DumbAI.combinations.contains((0, 0, 0, 0, 10)))
-    assert(DumbAI.combinations.contains((1, 0, 4, 4, 1)))
-    assert(DumbAI.combinations.contains((1, 0, 5, 3, 1)))
-    assert(DumbAI.combinations.contains((1, 0, 9, 0, 0)))
+    assert(FortuneAI.combinations.contains((0, 0, 0, 0, 10)))
+    assert(FortuneAI.combinations.contains((1, 0, 4, 4, 1)))
+    assert(FortuneAI.combinations.contains((1, 0, 5, 3, 1)))
+    assert(FortuneAI.combinations.contains((1, 0, 9, 0, 0)))
   }
 
   test("Test children") {
-    val child = DumbAI.child(game, 0, 6, 4, 0, 0)
+    val child = FortuneAI.child(game, 0, 6, 4, 0, 0)
     val eFinal = child.getAftermathCalculus(true)("pFinal")
     val attackFinal = child.getAftermathCalculus(true)("eAtk")
     assert(attackFinal === 30)    
@@ -86,7 +86,7 @@ class DumbAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test minimal move") {
-    val minimalVal = DumbAI.getMove(game).getAftermathCalculus(true)("pFinal")
+    val minimalVal = FortuneAI.getMove(Seq(game)).getAftermathCalculus(true)("pFinal")
     assert(minimalVal === 40)
   }
 }
