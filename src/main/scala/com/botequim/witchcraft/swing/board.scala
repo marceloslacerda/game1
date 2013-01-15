@@ -78,7 +78,7 @@ trait WitchcraftBoard {
       val current = gameStates.head
       spellPanel.aftermath = true
       spellPanel.updateScore(current)
-      clearStatesWith(current.getAftermath)  
+      clearStatesWith(current.getAftermath.get)
     }
   }
 

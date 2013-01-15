@@ -59,19 +59,39 @@ been exceeded.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
                               10.f,
-                              Map(true -> false, false -> false),
+                              Map(true -> true, false -> true),
                               Map(true -> 4.f, false -> 88.f))
-    game = game.getAftermath
+    game = game.getAftermath.get
     assert(game.availableGamePoints(true) === 0.f)
   }
+
+  test("""Game returns none if one player don't commit.""") {
+    val prms = (Map(true -> ((Circle, 0, 0) :: Spell(1)),
+                                  false -> ((Concave, 8, 8) :: Spell())),
+                              10.f,
+                              Map(true -> 4.f, false -> 88.f))
+    val g1 = new WitchcraftGame(prms._1, prms._2,
+      Map(true -> false, false -> false), prms._3)
+    val g2 = new WitchcraftGame(prms._1, prms._2,
+      Map(true -> true, false -> false), prms._3)
+    val g3 = new WitchcraftGame(prms._1, prms._2,
+      Map(true -> false, false -> true), prms._3)
+    val g4 = new WitchcraftGame(prms._1, prms._2,
+      Map(true -> true, false -> true), prms._3)
+    assert(g1.getAftermath === None)
+    assert(g2.getAftermath === None)
+    assert(g3.getAftermath === None)
+    assert(g4.getAftermath.isInstanceOf[Some[_]])
+  }
+
   test("""The getAftermath causes the correct damage taking into
 account the reflection shield.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
                               10.f,
-                              Map(true -> false, false -> false),
+                              Map(true -> true, false -> true),
                               Map(true -> 88.f, false -> 88.f))
-    game = game.getAftermath
+    game = game.getAftermath.get
     assert(game.availableGamePoints(true) === 74.f)
   }
 
