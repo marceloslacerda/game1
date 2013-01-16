@@ -33,7 +33,7 @@ import Effect._
 import Form._
 
  case class WitchcraftGame (spells: Map[Boolean, Spell],
-                      availableTurnPoints: Map[Boolean, Float],
+                      turnPoints: Map[Boolean, Float],
                       commits: Map[Boolean, Boolean],
                       availableGamePoints: Map[Boolean, Float]) {
   import WitchcraftGame._
@@ -49,13 +49,13 @@ import Form._
       case Circle => 1
       case _ => points
     }
-    val newTurnPoints = availableTurnPoints(player) - pointsWasted
+    val newTurnPoints = turnPoints(player) - pointsWasted
     val newSpells = spells.updated(player, ((f, points, intersec) :: spells(player)))
     if(newTurnPoints < 0)
       return None
     else
       return Some(new WitchcraftGame(newSpells,
-                         availableTurnPoints.updated(player, newTurnPoints),
+                         turnPoints.updated(player, newTurnPoints),
                          commits,
                          availableGamePoints))
   }
@@ -63,7 +63,7 @@ import Form._
   def commit(player: Boolean): WitchcraftGame ={
     val nppt = pointsPTurnLimit.min(availableGamePoints(player))
     new WitchcraftGame(spells,
-                   availableTurnPoints.updated(player, nppt),
+                   turnPoints.updated(player, nppt),
                    commits.updated(player, true),
                    availableGamePoints)
   }
@@ -100,7 +100,7 @@ import Form._
       true -> Spell(resultA("pCharge").toInt),
       false -> Spell(resultB("pCharge").toInt))
     Option(new WitchcraftGame(newSpells,
-                       availableTurnPoints,
+                       turnPoints,
                        initialCommitMap,
                        newGamePoints))
   }

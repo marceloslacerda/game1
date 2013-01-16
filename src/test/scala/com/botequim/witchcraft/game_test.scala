@@ -33,12 +33,12 @@ class WitchcraftGameSuite extends FunSuite with BeforeAndAfter {
   test("Compose works nicelly with many points available.") {
     val prev = game
     var nu = getAndTestCompose(game.compose(Circle, 0, 0, true))
-    assert(nu.availableTurnPoints(true) === prev.availableTurnPoints(true) - 1)
+    assert(nu.turnPoints(true) === prev.turnPoints(true) - 1)
     assert(nu.spells(true).combination.length
            > prev.spells(true).combination.length)
 
     nu = getAndTestCompose(game.compose(Concave, 7, 7, true))
-    assert(nu.availableTurnPoints(true) === prev.availableTurnPoints(true) - 7)
+    assert(nu.turnPoints(true) === prev.turnPoints(true) - 7)
   }
 
   test("""Compose returns a None when the number of points for each spell have

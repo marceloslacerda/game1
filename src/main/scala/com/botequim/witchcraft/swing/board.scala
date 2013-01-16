@@ -59,7 +59,7 @@ trait WitchcraftBoard {
   }
 
   def availTPoints =
-    gameStates.head.availableTurnPoints(player) -
+    gameStates.head.turnPoints(player) -
       (if(canvas.circle) 1 else canvas.points.size)
 
   def clearStatesWith(g: WitchcraftGame) {
