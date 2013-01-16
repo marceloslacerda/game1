@@ -30,19 +30,15 @@ object MinimaxAI extends WitchcraftAI with AlphaBetaPrunning{
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0.f ||
     node.gamePoints(false) == 0.f
-  def children(node: Node, player: Player): Seq[Node] =
-    endGameChildren(node)
-  def fae(node: Node, player: Player): Int =
-    node.gamePoints(player).toInt
-  override def not(player: Player) = !player
-
-  def endGameChildren(n: Node) = {
+  def children(n: Node, player: Player): Seq[Node] =
     children(n) flatMap { i =>
       combinations map { j =>
         child(i, j._1, j._2, j._3, j._4, j._5)
       }
     }
-  }
+  def fae(node: Node, player: Player): Int =
+    node.gamePoints(player).toInt
+  override def not(player: Player) = !player
 
   def getMove(sx: Seq[Node]): Node = {
     children(sx.head) map {
