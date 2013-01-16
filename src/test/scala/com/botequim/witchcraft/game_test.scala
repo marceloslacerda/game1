@@ -32,13 +32,13 @@ class WitchcraftGameSuite extends FunSuite with BeforeAndAfter {
 
   test("Compose works nicelly with many points available.") {
     val prev = game
-    var nu = getAndTestGame(game.compose(Circle, 0, 0, true))
-    assert(nu.availableTurnPoints === prev.availableTurnPoints - 1)
+    var nu = getAndTestCompose(game.compose(Circle, 0, 0, true))
+    assert(nu.availableTurnPoints(true) === prev.availableTurnPoints(true) - 1)
     assert(nu.spells(true).combination.length
            > prev.spells(true).combination.length)
 
-    nu = getAndTestGame(game.compose(Concave, 7, 7, true))
-    assert(nu.availableTurnPoints === prev.availableTurnPoints - 7)
+    nu = getAndTestCompose(game.compose(Concave, 7, 7, true))
+    assert(nu.availableTurnPoints(true) === prev.availableTurnPoints(true) - 7)
   }
 
   test("""Compose returns a None when the number of points for each spell have
@@ -49,7 +49,7 @@ been exceeded.""") {
   test("""Compose returns a None when the number of points for the player have
 been exceeded.""") {
     game = new WitchcraftGame(Map(true -> Spell(), false -> Spell()),
-                              0.f,
+                              Map(true -> 0.f, false -> 10.f),
                               Map(true -> false, false -> false),
                               Map(true -> 10.f, false -> 88.f))
     assert(game.compose(Circle, 0, 0, true) === None)
@@ -58,17 +58,27 @@ been exceeded.""") {
   test("""Game points never reaches below zero.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              10.f,
+                              Map(true -> 10.f, false -> 10.f),
                               Map(true -> true, false -> true),
                               Map(true -> 4.f, false -> 88.f))
-    game = game.getAftermath.get
+    game = getAndTestAftermath(game.getAftermath)
     assert(game.availableGamePoints(true) === 0.f)
+  }
+
+  test("""Game points is decreased by turn points.""") {
+    game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
+                                  false -> ((Concave, 8, 8) :: Spell())),
+                              Map(true -> 10.f, false -> 10.f),
+                              Map(true -> true, false -> true),
+                              Map(true -> 4.f, false -> 88.f))
+    game = getAndTestAftermath(game.getAftermath)
+    assert(game.availableGamePoints(false) === 78.f)
   }
 
   test("""Game returns none if one player don't commit.""") {
     val prms = (Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              10.f,
+                              Map(true -> 10.f, false -> 10.f),
                               Map(true -> 4.f, false -> 88.f))
     val g1 = new WitchcraftGame(prms._1, prms._2,
       Map(true -> false, false -> false), prms._3)
@@ -88,19 +98,55 @@ been exceeded.""") {
 account the reflection shield.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              10.f,
+                              Map(true -> 10.f, false -> 10.f),
                               Map(true -> true, false -> true),
                               Map(true -> 88.f, false -> 88.f))
     game = game.getAftermath.get
     assert(game.availableGamePoints(true) === 74.f)
   }
 
-  def getAndTestGame(o: Option[WitchcraftGame]) =
+  test("""Entire game session works as expected""") {
+    val first = game
+    def doTurn(g: (Option[WitchcraftGame], Int)): Stream[(Option[WitchcraftGame], Int)] ={
+      val nu = g._1 flatMap {
+        _.compose(Concave, 4, 1, true) } flatMap {
+        _.commit(true).commit(false).getAftermath
+      }
+      (nu, g._2) #:: doTurn((nu, g._2 + 1))
+    }
+
+    val sx = doTurn(Option(game), 1) takeWhile { i: (Option[WitchcraftGame], Int) =>
+      i._1 match {
+        case Some(g) => {
+          assert(g.availableGamePoints(false) >=
+            first.availableGamePoints(false) - i._2 * 15, "Inert player")
+          assert(g.availableGamePoints(true) >=
+            first.availableGamePoints(true) - i._2 * 10, "Active player")
+          g.availableGamePoints(false) > 0 && i._2 < 10
+        }
+        case None => {
+          assert(false, "Composition failed")
+          false
+        }
+      }
+    }
+    assert(sx.last._1.get.availableGamePoints(false) >= 10.f, "Overall inert player")
+    assert(sx.last._1.get.availableGamePoints(true) > 10.f, "Overall active player")
+  }
+
+  def getAndTestCompose(o: Option[WitchcraftGame]) ={
+    getAndTestGame(o, "compose")
+  }
+  def getAndTestAftermath(o: Option[WitchcraftGame]) ={
+    getAndTestGame(o, "aftermath")
+  }
+  def getAndTestGame(o: Option[WitchcraftGame], m: String) ={
     o match {
       case Some(g) => g
       case None => {
-        assert(false, "WitchcraftGame produced a None on compose.")
+        assert(false, "WitchcraftGame produced a None on " + m)
         null
       }
     }
+  }
 }

@@ -33,7 +33,7 @@ import Effect._
 import Form._
 
  case class WitchcraftGame (spells: Map[Boolean, Spell],
-                      availableTurnPoints: Float,
+                      availableTurnPoints: Map[Boolean, Float],
                       commits: Map[Boolean, Boolean],
                       availableGamePoints: Map[Boolean, Float]) {
   import WitchcraftGame._
@@ -49,22 +49,24 @@ import Form._
       case Circle => 1
       case _ => points
     }
-    val newTurnPoints = availableTurnPoints - pointsWasted
+    val newTurnPoints = availableTurnPoints(player) - pointsWasted
     val newSpells = spells.updated(player, ((f, points, intersec) :: spells(player)))
     if(newTurnPoints < 0)
       return None
     else
       return Some(new WitchcraftGame(newSpells,
-                         newTurnPoints,
+                         availableTurnPoints.updated(player, newTurnPoints),
                          commits,
                          availableGamePoints))
   }
 
-  def commit(player: Boolean): WitchcraftGame =
+  def commit(player: Boolean): WitchcraftGame ={
+    val nppt = pointsPTurnLimit.min(availableGamePoints(player))
     new WitchcraftGame(spells,
-                   pointsPTurnLimit.min(availableGamePoints(player)),
+                   availableTurnPoints.updated(player, nppt),
                    commits.updated(player, true),
                    availableGamePoints)
+  }
 
   def getAftermathCalculus(player: Boolean): Map[String, Double] ={
     val rA = spells(player).getTurnResult
@@ -97,9 +99,8 @@ import Form._
     val newSpells = Map(
       true -> Spell(resultA("pCharge").toInt),
       false -> Spell(resultB("pCharge").toInt))
-    val newPPT = pointsPTurnLimit.min(newGamePoints(true))
     Option(new WitchcraftGame(newSpells,
-                       newPPT,
+                       availableTurnPoints,
                        initialCommitMap,
                        newGamePoints))
   }
@@ -111,7 +112,7 @@ object WitchcraftGame {
   val initialCommitMap = Map(true -> false, false -> false)
   def apply() = new WitchcraftGame(
       Map(true -> Spell(), false -> Spell()),
-      pointsPTurnLimit,
+      Map(true -> pointsPTurnLimit, false -> pointsPTurnLimit),
       initialCommitMap,
       Map(true -> initialPoints, false -> initialPoints))
 }
