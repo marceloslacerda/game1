@@ -35,7 +35,7 @@ import Form._
  case class WitchcraftGame (spells: Map[Boolean, Spell],
                       turnPoints: Map[Boolean, Float],
                       commits: Map[Boolean, Boolean],
-                      availableGamePoints: Map[Boolean, Float]) {
+                      gamePoints: Map[Boolean, Float]) {
   import WitchcraftGame._
 
   def compose(f: Form, points: Int, intersec: Int, player: Boolean): Option[WitchcraftGame] ={
@@ -57,21 +57,21 @@ import Form._
       return Some(new WitchcraftGame(newSpells,
                          turnPoints.updated(player, newTurnPoints),
                          commits,
-                         availableGamePoints))
+                         gamePoints))
   }
 
   def commit(player: Boolean): WitchcraftGame ={
-    val nppt = pointsPTurnLimit.min(availableGamePoints(player))
+    val nppt = pointsPTurnLimit.min(gamePoints(player))
     new WitchcraftGame(spells,
                    turnPoints.updated(player, nppt),
                    commits.updated(player, true),
-                   availableGamePoints)
+                   gamePoints)
   }
 
   def getAftermathCalculus(player: Boolean): Map[String, Double] ={
     val rA = spells(player).getTurnResult
     val rB = spells(!player).getTurnResult
-    val aPoints = availableGamePoints(player) - pointsPTurnLimit
+    val aPoints = gamePoints(player) - pointsPTurnLimit
     import Spell._
     val bAtk = getAttackPower(rB)
     val aRefl = getReflectPower(rA)

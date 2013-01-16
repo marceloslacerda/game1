@@ -28,12 +28,12 @@ object MinimaxAI extends WitchcraftAI with AlphaBetaPrunning{
   val maxPlayer = false
   val minPlayer = false
   def isTerminal(node: Node): Boolean =
-    node.availableGamePoints(true) == 0.f ||
-    node.availableGamePoints(false) == 0.f
+    node.gamePoints(true) == 0.f ||
+    node.gamePoints(false) == 0.f
   def children(node: Node, player: Player): Seq[Node] =
     endGameChildren(node)
   def fae(node: Node, player: Player): Int =
-    node.availableGamePoints(player).toInt
+    node.gamePoints(player).toInt
   override def not(player: Player) = !player
 
   def endGameChildren(n: Node) = {

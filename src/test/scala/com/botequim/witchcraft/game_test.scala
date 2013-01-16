@@ -62,7 +62,7 @@ been exceeded.""") {
                               Map(true -> true, false -> true),
                               Map(true -> 4.f, false -> 88.f))
     game = getAndTestAftermath(game.getAftermath)
-    assert(game.availableGamePoints(true) === 0.f)
+    assert(game.gamePoints(true) === 0.f)
   }
 
   test("""Game points is decreased by turn points.""") {
@@ -72,7 +72,7 @@ been exceeded.""") {
                               Map(true -> true, false -> true),
                               Map(true -> 4.f, false -> 88.f))
     game = getAndTestAftermath(game.getAftermath)
-    assert(game.availableGamePoints(false) === 78.f)
+    assert(game.gamePoints(false) === 78.f)
   }
 
   test("""Game returns none if one player don't commit.""") {
@@ -102,7 +102,7 @@ account the reflection shield.""") {
                               Map(true -> true, false -> true),
                               Map(true -> 88.f, false -> 88.f))
     game = game.getAftermath.get
-    assert(game.availableGamePoints(true) === 74.f)
+    assert(game.gamePoints(true) === 74.f)
   }
 
   test("""Entire game session works as expected""") {
@@ -118,11 +118,11 @@ account the reflection shield.""") {
     val sx = doTurn(Option(game), 1) takeWhile { i: (Option[WitchcraftGame], Int) =>
       i._1 match {
         case Some(g) => {
-          assert(g.availableGamePoints(false) >=
-            first.availableGamePoints(false) - i._2 * 15, "Inert player")
-          assert(g.availableGamePoints(true) >=
-            first.availableGamePoints(true) - i._2 * 10, "Active player")
-          g.availableGamePoints(false) > 0 && i._2 < 10
+          assert(g.gamePoints(false) >=
+            first.gamePoints(false) - i._2 * 15, "Inert player")
+          assert(g.gamePoints(true) >=
+            first.gamePoints(true) - i._2 * 10, "Active player")
+          g.gamePoints(false) > 0 && i._2 < 10
         }
         case None => {
           assert(false, "Composition failed")
@@ -130,8 +130,8 @@ account the reflection shield.""") {
         }
       }
     }
-    assert(sx.last._1.get.availableGamePoints(false) >= 10.f, "Overall inert player")
-    assert(sx.last._1.get.availableGamePoints(true) > 10.f, "Overall active player")
+    assert(sx.last._1.get.gamePoints(false) >= 10.f, "Overall inert player")
+    assert(sx.last._1.get.gamePoints(true) > 10.f, "Overall active player")
   }
 
   def getAndTestCompose(o: Option[WitchcraftGame]) ={
