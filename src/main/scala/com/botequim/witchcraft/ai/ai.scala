@@ -25,9 +25,9 @@ import com.botequim.ai.AI
 trait WitchcraftNodeGenerator {
   type Node = WitchcraftGame
 
-  def children(n: Node): Seq[Node] = {
+  def children(n: Node, player: Boolean): Seq[Node] = {
     combinations map { i =>
-      child(n, i._1, i._2, i._3, i._4, i._5)
+      child(n, i._1, i._2, i._3, i._4, i._5, player)
     }
   }
 
@@ -42,11 +42,13 @@ trait WitchcraftNodeGenerator {
     } yield (reflect, mCharge, attack, defense, charge)
   }
 
-  def child(node: Node, reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int): Node = {
+  def child(node: Node, reflect: Int, mCharge: Int, attack: Int, defense: Int,
+    charge: Int, player: Boolean): Node = {
+
     import Form._
     var result = node
     def compose(f: Form, i: Int, j: Int){
-      result = result.compose(f, i, j, false).getOrElse(result)
+      result = result.compose(f, i, j, player).getOrElse(result)
     }
     if(reflect == 1) compose(Circle, 0 , 0)
     for(i <- 0 until mCharge) compose(Circle, 0, 0)
@@ -56,7 +58,7 @@ trait WitchcraftNodeGenerator {
     }
     if(defense > 0) compose(Convex, defense, 0)
     for(i <- 0 until charge) compose(Circle, 0, 0)
-    result.commit(false)
+    result.commit(player)
   }
 }
 

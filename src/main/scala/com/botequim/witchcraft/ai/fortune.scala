@@ -22,8 +22,8 @@ package com.botequim.witchcraft.ai
 import com.botequim.witchcraft.rules.{WitchcraftGame, Form}
 
 object FortuneAI extends WitchcraftAI {
-  def getMove(sx: Seq[Node]): Node = {
-    val grouped = children(sx.head).groupBy[Double] { n => n.getAftermathCalculus(true)("pFinal") }
+  def getMove(sx: Seq[Node], player: Boolean): Node = {
+    val grouped = children(sx.head, player).groupBy[Double] { n => n.getAftermathCalculus(true)("pFinal") }
     val minimal = grouped(grouped.keys.min)
     minimal maxBy { n => n.getAftermathCalculus(true)("pFinal")}
   }

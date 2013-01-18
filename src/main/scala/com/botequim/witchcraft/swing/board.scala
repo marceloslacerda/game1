@@ -83,7 +83,7 @@ trait WitchcraftBoard {
   }
 
   def aiMove(ai: WitchcraftAI) {
-    clearStatesWith(ai.getMove(gameHistory.tail))
+    clearStatesWith(ai.getMove(gameHistory.tail, player))
     gameHistory push gameStates.head
     val aiBol = !player
     gameStates.head.spells(aiBol)

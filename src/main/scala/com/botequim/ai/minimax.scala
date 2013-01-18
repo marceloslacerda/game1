@@ -19,7 +19,7 @@
 
 package com.botequim.ai
 
-trait AlphaBetaPrunning {
+trait Minimax {
   type Player
   type Node
   val maxPlayer : Player

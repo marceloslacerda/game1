@@ -23,5 +23,5 @@ import com.botequim.witchcraft.rules.WitchcraftGame
 
 trait AI {
   type Node
-  def getMove(node: Seq[Node]): Node
+  def getMove(node: Seq[Node], player: Boolean): Node
 }

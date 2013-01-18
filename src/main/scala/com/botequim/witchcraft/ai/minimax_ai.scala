@@ -20,29 +20,28 @@
 package com.botequim.witchcraft.ai
 
 import com.botequim.witchcraft.rules.{WitchcraftGame, Form}
-import com.botequim.ai.AlphaBetaPrunning
-import com.botequim.ai.AI
+import com.botequim.ai.Minimax
 
-object MinimaxAI extends WitchcraftAI with AlphaBetaPrunning{
+object MinimaxAI extends WitchcraftAI with Minimax {
   type Player = Boolean
   val maxPlayer = false
   val minPlayer = false
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0.f ||
     node.gamePoints(false) == 0.f
-  def children(n: Node, player: Player): Seq[Node] =
-    children(n) flatMap { i =>
+  override def children(n: Node, player: Player): Seq[Node] =
+    super.children(n, player) flatMap { i =>
       combinations map { j =>
-        child(i, j._1, j._2, j._3, j._4, j._5)
-      }
+        child(i, j._1, j._2, j._3, j._4, j._5, !player)
+      } map { i => i.getAftermath.get }
     }
   def fae(node: Node, player: Player): Int =
     node.gamePoints(player).toInt
   override def not(player: Player) = !player
 
-  def getMove(sx: Seq[Node]): Node = {
-    children(sx.head) map {
-      i => (apply(i, 1, false), i)
+  def getMove(sx: Seq[Node], player: Boolean): Node = {
+    children(sx.head, player) map {
+      i => (apply(i, 1, player), i)
     } minBy {_._1} _2
   }
 }
