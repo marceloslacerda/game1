@@ -6,7 +6,7 @@ implementation of the game TAW.
 
 COMPILATION
 -----------
-To compile and run, you will need a java sdk:
+To compile and run, you will need a java sdk version 6:
 
 * If you are using linux you can look up the internet for specific
 instructions about your distribution. Openjdk is recommended but
@@ -14,7 +14,8 @@ Oracle JDK should also work.
 
 If you are using Windows it is recommended to use the Oracle JDK.
 
-sbt is also necessary and its available at http://www.scala-sbt.org/.
+sbt version 0.12.x is also necessary and its available at
+http://www.scala-sbt.org/.
 
 Once all the necessary tools are installed run from a terminal in this
 directory

@@ -33,7 +33,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val child = FortuneAI.child(game, reflect, mCharge, attack, defense, charge)
+    val child = FortuneAI.child(game, reflect, mCharge, attack, defense, charge, false)
     assert(child.spells(false).getTurnResult === 
         Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
             Reflect -> eReflect))
@@ -78,7 +78,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test children") {
-    val child = FortuneAI.child(game, 0, 6, 4, 0, 0)
+    val child = FortuneAI.child(game, 0, 6, 4, 0, 0, false)
     val eFinal = child.getAftermathCalculus(true)("pFinal")
     val attackFinal = child.getAftermathCalculus(true)("eAtk")
     assert(attackFinal === 30)    
@@ -86,7 +86,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test minimal move") {
-    val minimalVal = FortuneAI.getMove(Seq(game)).getAftermathCalculus(true)("pFinal")
+    val minimalVal = FortuneAI.getMove(Seq(game), false).getAftermathCalculus(true)("pFinal")
     assert(minimalVal === 40)
   }
 }
