@@ -134,7 +134,7 @@ object Spell {
 class Spell(mult: Int, comb: List[(Effect, Int)]) {
   val combination = comb
   val multLvl = mult
-
+  def isEmpty = comb.isEmpty
   def ::(elem: (Effect, Int)) =
     new Spell(multLvl, elem :: combination)
 

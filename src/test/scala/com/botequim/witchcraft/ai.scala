@@ -90,3 +90,26 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
     assert(minimalVal === 40)
   }
 }
+
+class MinimaxAISuite extends FunSuite with BeforeAndAfter {
+  var game: WitchcraftGame = _
+
+  before {
+    game = WitchcraftGame.apply
+  }
+
+  test("Test branching size") {
+    val before = Runtime.getRuntime().freeMemory
+    val c = MinimaxAI.children(game, false)
+    val used = Runtime.getRuntime().freeMemory - before
+    println("%s MB used".format(used/1000/1000))
+    assert(c.length === 26896)
+    println("Ok done")
+  }
+
+  test("Eventual attack") {
+    println("Yep ok")
+    val movement = MinimaxAI.getMove(game :: Nil, false)
+    assert(movement.spells(false).isEmpty === true)
+  }
+}
