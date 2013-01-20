@@ -131,12 +131,11 @@ object Spell {
     comb(Charge)
 }
 
-class Spell(mult: Int, comb: List[(Effect, Int)]) {
-  val combination = comb
-  val multLvl = mult
+class Spell(lvl: Int, comb: List[(Effect, Int)]) {
+  def combination = comb
   def isEmpty = comb.isEmpty
   def ::(elem: (Effect, Int)) =
-    new Spell(multLvl, elem :: combination)
+    new Spell(lvl, elem :: combination)
 
   def ::(tup: (Form, Int, Int)): Spell ={
     val (elem, points, intersects) = tup
@@ -154,7 +153,7 @@ class Spell(mult: Int, comb: List[(Effect, Int)]) {
   def getTurnResult: Map[Effect, Int] = {
     val combination = comb.reverse
     var result: Map[Effect, Int] = Map()
-    val multiplier = multLvl + 1
+    val multiplier = lvl + 1
     //First off, reflect
     result += Reflect ->
                ((

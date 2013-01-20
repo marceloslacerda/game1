@@ -107,9 +107,9 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     println("Ok done")
   }
 
-  test("Eventual attack") {
+/*  test("Eventual attack") {
     println("Yep ok")
     val movement = MinimaxAI.getMove(game :: Nil, false)
     assert(movement.spells(false).isEmpty === true)
-  }
+  }*/
 }
