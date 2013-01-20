@@ -71,18 +71,28 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test combinations") {
-    assert(FortuneAI.combinations.contains((0, 0, 0, 0, 10)))
-    assert(FortuneAI.combinations.contains((1, 0, 4, 4, 1)))
-    assert(FortuneAI.combinations.contains((1, 0, 5, 3, 1)))
-    assert(FortuneAI.combinations.contains((1, 0, 9, 0, 0)))
+    val combs = FortuneAI.combinations
+    assert(combs.contains((0, 0, 0, 0, 10)))
+    assert(combs.contains((1, 0, 4, 4, 1)))
+    assert(combs.contains((1, 0, 5, 3, 1)))
+    assert(combs.contains((1, 0, 9, 0, 0)))
+    assert(combs.distinct.size === combs.size, "There is no combination repetition")
+
   }
 
-  test("Test children") {
+  test("Test child") {
     val child = FortuneAI.child(game, 0, 6, 4, 0, 0, false)
     val eFinal = child.getAftermathCalculus(true)("pFinal")
     val attackFinal = child.getAftermathCalculus(true)("eAtk")
     assert(attackFinal === 30)    
     assert(eFinal === 60)
+  }
+
+  test("Test children") {
+    val sx = FortuneAI.children(game, false) map {
+      c => c.spells(false).combination
+    }
+    assert(sx.size === sx.distinct.size, "There is no spell repetition")
   }
 
   test("Test minimal move") {
