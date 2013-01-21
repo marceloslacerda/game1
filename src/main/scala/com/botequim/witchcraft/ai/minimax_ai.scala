@@ -29,17 +29,24 @@ object MinimaxAI extends WitchcraftAI with Minimax {
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0.f ||
     node.gamePoints(false) == 0.f
-  override def children(n: Node, player: Player): Seq[Node] =
+/*  override def children(n: Node, player: Player): Seq[Node] =
     super.children(n, player) flatMap { i =>
       super.children(i, !player)
-    }
+    }*/
   def fae(node: Node, player: Player): Int =
     node.gamePoints(player).toInt
   override def not(player: Player) = !player
 
   def getMove(sx: Seq[Node], player: Boolean): Node = {
-    children(sx.head, player) map {
+    children(sx.head, player) maxBy { i=>
+      val min = children(i, !player) map { _.getAftermath.get } minBy { j =>
+        j.gamePoints(!player) - j.gamePoints(player)
+      }
+      min.gamePoints(!player) - min.gamePoints(player)
+    }
+  }
+/*    children(sx.head, player) map {
       i => (apply(i, 1, player), i)
     } minBy {_._1} _2
-  }
+  }*/
 }

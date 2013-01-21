@@ -116,18 +116,18 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     game = WitchcraftGame.apply
   }
 
-  test("Test branching size") {
+/*  test("Test branching size") {
     val before = Runtime.getRuntime().freeMemory
     val c = MinimaxAI.children(game, false)
     val used = Runtime.getRuntime().freeMemory - before
     println("%s MB used".format(used/1000/1000))
     assert(c.length === 26896)
     println("Ok done")
-  }
-
-  /*test("Eventual attack") {
-    println("Yep ok")
-    val movement = MinimaxAI.getMove(game :: Nil, false)
-    assert(movement.spells(false).isEmpty === true)
   }*/
+
+  test("Eventual attack") {
+    val movement = MinimaxAI.getMove(game :: Nil, false)
+    println(movement.spells(false).combination)
+    assert(movement.spells(false).isEmpty === true)
+  }
 }
