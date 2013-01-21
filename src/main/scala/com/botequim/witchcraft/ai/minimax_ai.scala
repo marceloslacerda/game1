@@ -31,9 +31,7 @@ object MinimaxAI extends WitchcraftAI with Minimax {
     node.gamePoints(false) == 0.f
   override def children(n: Node, player: Player): Seq[Node] =
     super.children(n, player) flatMap { i =>
-      combinations map { j =>
-        child(i, j._1, j._2, j._3, j._4, j._5, !player)
-      } map { i => i.getAftermath.get }
+      super.children(i, !player)
     }
   def fae(node: Node, player: Player): Int =
     node.gamePoints(player).toInt

@@ -20,7 +20,7 @@
 package com.botequim.witchcraft.ai
 
 import org.scalatest.{FunSuite, BeforeAndAfter}
-import com.botequim.witchcraft.rules.{WitchcraftGame, Effect}
+import com.botequim.witchcraft.rules.{WitchcraftGame, Effect, Form}
 import Effect._
 
 
@@ -33,10 +33,14 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val child = FortuneAI.child(game, reflect, mCharge, attack, defense, charge, false)
-    assert(child.spells(false).getTurnResult === 
-        Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
-            Reflect -> eReflect))
+    val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge)
+    FortuneAI.child(Option(game), comp, false) match {
+      case Some(node) =>
+        assert(node.spells(false).getTurnResult ===
+               Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
+               Reflect -> eReflect))
+      case None => assert(false, "Cannot compose")
+    }
   }
 
   test("Empty child.") {
@@ -80,12 +84,16 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   }
 
-  test("Test child") {
-    val child = FortuneAI.child(game, 0, 6, 4, 0, 0, false)
-    val eFinal = child.getAftermathCalculus(true)("pFinal")
-    val attackFinal = child.getAftermathCalculus(true)("eAtk")
-    assert(attackFinal === 30)    
-    assert(eFinal === 60)
+  test("Test spell composition") {
+    import Form._
+    val comp = FortuneAI.spellComposition(0, 5, 5, 0, 0)
+    assert( comp === (Circle, 0, 0) ::
+      (Circle, 0, 0) ::
+      (Circle, 0, 0) ::
+      (Circle, 0, 0) ::
+      (Circle, 0, 0) ::
+      (Concave, 5, 5) ::
+      (Convex, 0, 0) :: Nil)
   }
 
   test("Test children") {
@@ -117,7 +125,7 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     println("Ok done")
   }
 
-/*  test("Eventual attack") {
+  /*test("Eventual attack") {
     println("Yep ok")
     val movement = MinimaxAI.getMove(game :: Nil, false)
     assert(movement.spells(false).isEmpty === true)
