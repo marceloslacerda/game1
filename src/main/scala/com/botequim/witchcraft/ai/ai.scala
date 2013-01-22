@@ -38,7 +38,7 @@ trait WitchcraftNodeGenerator {
   }
 
   def spellComposition(reflect: Int, mCharge: Int, attack: Int, defense: Int,
-    charge: Int): Seq[(Form, Int, Int)] = {
+    charge: Int): List[(Form, Int, Int)] = {
     val fCircles = 0 until (reflect + mCharge) map { i =>
       (Circle, 0, 0)
     }
@@ -51,7 +51,7 @@ trait WitchcraftNodeGenerator {
     val lCircles = 0 until (charge) map { i =>
       (Circle, 0, 0)
     }
-    fCircles.toList ::: concave :: convex :: lCircles.toList
+       lCircles.toList ::: convex :: concave :: fCircles.toList
   }
 
   def children_(node: Node, player: Boolean): Seq[Node] = {
@@ -78,18 +78,16 @@ trait WitchcraftNodeGenerator {
     distinct(children_(node, player).toList)
   }
 
-  def child(node: Option[Node], spell: Seq[(Form, Int, Int)],
-              player: Boolean): Option[Node] = {
-    if(spell == Nil) node
-    else {
-      val s = spell.head
-      if(s == (Concave, 0, 0) || s == (Convex, 0, 0)) {
-        child(node, spell.tail, player)
+  def child(node: Option[Node], spell: List[(Form, Int, Int)],
+              player: Boolean): Option[Node] = spell match {
+    case Nil => node
+    case x :: sx =>
+      if(x == (Concave, 0, 0) || x == (Convex, 0, 0)) {
+        child(node, sx, player)
       } else
         child(node flatMap {
-          _.compose(s._1, s._2, s._3, player)
-        }, spell.tail, player)
-    }
+          _.compose(x._1, x._2, x._3, player)
+        }, sx, player)
   }
 }
 

@@ -22,10 +22,7 @@ package com.botequim.witchcraft.ai
 import com.botequim.witchcraft.rules.{WitchcraftGame, Form}
 import com.botequim.ai.Minimax
 
-object MinimaxAI extends WitchcraftAI with Minimax {
-  type Player = Boolean
-  val maxPlayer = false
-  val minPlayer = false
+object MinimaxAI extends WitchcraftAI{
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0.f ||
     node.gamePoints(false) == 0.f
@@ -33,16 +30,32 @@ object MinimaxAI extends WitchcraftAI with Minimax {
     super.children(n, player) flatMap { i =>
       super.children(i, !player)
     }*/
-  def fae(node: Node, player: Player): Int =
-    node.gamePoints(player).toInt
-  override def not(player: Player) = !player
+  def fae(n: Node, player: Boolean): Float =
+    n.gamePoints(!player) - n.gamePoints(player)
+
+  def max(sx: Seq[Node], player: Boolean, depth: Int): Node = {
+    if(depth == 0) sx.head
+    sx maxBy { x =>
+      fae(min(children(x, !player), player, depth -1), player)
+    }
+  }
+
+  def min(sx: Seq[Node], player: Boolean, depth: Int): Node = {
+    sx minBy { x =>
+      if(depth == 0) fae(x, player)
+      else fae(max(children(x, !player), player, depth -1), player)
+    }
+  }
+
+  def getMove(sx: Seq[Node], player: Boolean, depth: Int): Node =
+    max(children(sx.head, player), player, depth)
 
   def getMove(sx: Seq[Node], player: Boolean): Node = {
     children(sx.head, player) maxBy { i=>
       val min = children(i, !player) map { _.getAftermath.get } minBy { j =>
-        j.gamePoints(!player) - j.gamePoints(player)
+        fae(j, player)
       }
-      min.gamePoints(!player) - min.gamePoints(player)
+      fae(min, player)
     }
   }
 /*    children(sx.head, player) map {

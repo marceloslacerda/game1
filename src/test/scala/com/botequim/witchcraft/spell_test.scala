@@ -2,17 +2,17 @@
  * Copyright 2013 Marcelo de Sena Lacerda
  *
  * This file is part of Witchcraft.
- * 
+ *
  * Witchcraft is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Witchcraft is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Witchcraft.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -24,7 +24,7 @@ import Form._
 import Effect._
 
 class SpellSuite extends FunSuite {
- 
+
   test("Spells are composed nicelly.") {
     val spell = (Circle, 0, 0) :: (Convex, 4, 0) :: (Concave, 5, 5) :: (Circle, 0, 0) :: Spell()
     assert(List((Reflect, 1), (Attack, 10), (Defense, 4),
@@ -58,6 +58,12 @@ class SpellSuite extends FunSuite {
     assert(spell.getTurnResult ===
       Map(Reflect -> 1, Attack -> 29, Defense -> 16,
           Charge -> 1))
+  }
+
+  test("Only charges is not possible.") {
+    val spell = (Convex, 3, 0) :: (Circle, 0, 0) :: (Circle, 0, 0) :: (Circle, 0, 0) ::
+      (Circle, 0, 0) :: (Circle, 0, 0) :: (Circle, 0, 0) :: (Circle, 0, 0) :: Spell()
+    assert(spell.getTurnResult === Map(Reflect -> 1, Attack-> 0, Charge -> 0, Defense -> 21))
   }
 
   test("Fast charges work.") {
@@ -115,7 +121,7 @@ class SpellSuite extends FunSuite {
   test("Reflect power works.") {
     var comb = ((Circle, 0, 0) :: Spell(0)).getTurnResult
     assert(.5f === Spell.getReflectPower(comb))
-    comb = ((Circle, 0, 0) :: Spell(1)).getTurnResult 
+    comb = ((Circle, 0, 0) :: Spell(1)).getTurnResult
     assert(.25f === Spell.getReflectPower(comb))
   }
 }

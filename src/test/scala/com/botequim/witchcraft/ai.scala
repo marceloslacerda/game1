@@ -2,17 +2,17 @@
  * Copyright 2013 Marcelo de Sena Lacerda
  *
  * This file is part of Witchcraft.
- * 
+ *
  * Witchcraft is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Witchcraft is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Witchcraft.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,7 +33,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge)
+    val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge).reverse
     FortuneAI.child(Option(game), comp, false) match {
       case Some(node) =>
         assert(node.spells(false).getTurnResult ===
@@ -87,7 +87,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   test("Test spell composition") {
     import Form._
     val comp = FortuneAI.spellComposition(0, 5, 5, 0, 0)
-    assert( comp === (Circle, 0, 0) ::
+    assert(comp.reverse === (Circle, 0, 0) ::
       (Circle, 0, 0) ::
       (Circle, 0, 0) ::
       (Circle, 0, 0) ::
@@ -124,10 +124,25 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     assert(c.length === 26896)
     println("Ok done")
   }*/
+  def groupSame[T](sx: List[T]): List[List[T]] = sx match {
+    case Nil => Nil
+    case y :: sy =>
+      val (first, rest) = sx span {_ == y}
+      first :: groupSame(rest)
+  }
+  def encoded[T](sx: List[T]): List[(T, Int)] =
+    groupSame(sx) map { x => (x.head, x.size) }
 
-  test("Eventual attack") {
-    val movement = MinimaxAI.getMove(game :: Nil, false)
-    println(movement.spells(false).combination)
-    assert(movement.spells(false).isEmpty === true)
+  test("Depth 1") {
+    val movement = MinimaxAI.getMove(game :: Nil, false, 1)
+    val enc = encoded(movement.spells(false).combination map { _._1})
+    assert(enc === List((Defense, 1), (Charge, 6), (Reflect, 1)))
+  }
+
+  test("Depth 2") {
+    val movement = MinimaxAI.getMove(game :: Nil, false, 2)
+    val enc = encoded(movement.spells(false).combination map { _._1})
+    println(enc)
+    assert(true, "It finishes.")
   }
 }
