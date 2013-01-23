@@ -36,14 +36,23 @@ object MinimaxAI extends WitchcraftAI{
   def max(sx: Seq[Node], player: Boolean, depth: Int): Node = {
     if(depth == 0) sx.head
     sx maxBy { x =>
-      fae(min(children(x, !player), player, depth -1), player)
+      val sc = children(x, !player) map { _.getAftermath.get } 
+      fae(min(sc, player, depth -1), player)
     }
   }
 
   def min(sx: Seq[Node], player: Boolean, depth: Int): Node = {
     sx minBy { x =>
-      if(depth == 0) fae(x, player)
-      else fae(max(children(x, !player), player, depth -1), player)
+      try {
+        if(depth == 0) fae(x, player)
+        else fae(max(children(x, player), player, depth), player)
+      }
+      catch {
+        case e: UnsupportedOperationException =>
+          println(x.gamePoints)
+          println(x.spells(false).combination)
+          throw e
+      }
     }
   }
 
