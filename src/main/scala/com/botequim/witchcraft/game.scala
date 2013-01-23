@@ -69,8 +69,8 @@ import Form._
   }
 
   def getAftermathCalculus(player: Boolean): Map[String, Double] ={
-    val rA = spells(player).getTurnResult
-    val rB = spells(!player).getTurnResult
+    val rA = spells(player).result
+    val rB = spells(!player).result
     val aPoints = gamePoints(player) - pointsPTurnLimit
     import Spell._
     val bAtk = getAttackPower(rB)
@@ -150,7 +150,7 @@ class Spell(lvl: Int, comb: List[(Effect, Int)]) {
     }
   }
 
-  def getTurnResult: Map[Effect, Int] = {
+  lazy val result: Map[Effect, Int] = {
     val combination = comb.reverse
     var result: Map[Effect, Int] = Map()
     val multiplier = lvl + 1

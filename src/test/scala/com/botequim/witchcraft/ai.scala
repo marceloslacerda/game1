@@ -20,7 +20,7 @@
 package com.botequim.witchcraft.ai
 
 import org.scalatest.{FunSuite, BeforeAndAfter}
-import com.botequim.witchcraft.rules.{WitchcraftGame, Effect, Form}
+import com.botequim.witchcraft.rules.{WitchcraftGame, Effect, Form, Spell}
 import Effect._
 
 
@@ -36,7 +36,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
     val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge).reverse
     FortuneAI.child(Option(game), comp, false) match {
       case Some(node) =>
-        assert(node.spells(false).getTurnResult ===
+        assert(node.spells(false).result ===
                Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
                Reflect -> eReflect))
       case None => assert(false, "Cannot compose")
@@ -97,10 +97,13 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test children") {
-    val sx = FortuneAI.children(game, false) map {
+    val cx = FortuneAI.children(game, false)
+    val sx = cx map {
       c => c.spells(false).combination
     }
+    println("Children size: " + sx.size)
     assert(sx.size === sx.distinct.size, "There is no spell repetition")
+    assert(cx.exists {_.spells(false).result == Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 21)}, "Missing 1")
   }
 
   test("Test minimal move") {
@@ -135,8 +138,8 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
 
   test("Depth 1") {
     val movement = MinimaxAI.getMove(game :: Nil, false, 1)
-    val enc = encoded(movement.spells(false).combination map { _._1})
-    assert(enc === List((Defense, 1), (Charge, 6), (Reflect, 1)))
+    val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
+    assert(movement.spells(false).result === res)
   }
 
   test("Depth 2") {

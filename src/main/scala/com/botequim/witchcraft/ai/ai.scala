@@ -70,7 +70,7 @@ trait WitchcraftNodeGenerator {
       if(sx == Nil) sx
       else {
         if(sx.tail exists {x =>
-          sx.head.spells(player).combination == x.spells(player).combination
+          sx.head.spells(player).result == x.spells(player).result
         }) distinct(sx.tail)
         else sx.head :: distinct(sx.tail)
       }
