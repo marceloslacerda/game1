@@ -22,7 +22,7 @@ package com.botequim.witchcraft.ai
 import com.botequim.witchcraft.rules.{WitchcraftGame, Form}
 import com.botequim.ai.Minimax
 
-object MinimaxAI extends WitchcraftAI{
+class MinimaxAI extends WitchcraftAI{
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0.f ||
     node.gamePoints(false) == 0.f

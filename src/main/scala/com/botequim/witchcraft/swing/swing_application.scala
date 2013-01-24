@@ -78,7 +78,7 @@ object WitchcraftApp extends SimpleSwingApplication {
 
   def playExperimental(){
     top.contents = gamePanel
-    board.ai = Option(com.botequim.witchcraft.ai.MinimaxAI)
+    board.ai = Option(new com.botequim.witchcraft.ai.MinimaxAI())
   }
 
   def gamePanel = new BorderPanel {

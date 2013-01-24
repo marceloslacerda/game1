@@ -114,6 +114,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
 class MinimaxAISuite extends FunSuite with BeforeAndAfter {
   var game: WitchcraftGame = _
+  val ai = new MinimaxAI()
 
   before {
     game = WitchcraftGame.apply
@@ -137,15 +138,25 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     groupSame(sx) map { x => (x.head, x.size) }
 
   test("Depth 1") {
-    val movement = MinimaxAI.getMove(game :: Nil, false, 1)
+    val movement =  ai.getMove(game :: Nil, false, 1)
     val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
     assert(movement.spells(false).result === res)
   }
 
-  test("Depth 2") {
-    val movement = MinimaxAI.getMove(game :: Nil, false, 2)
+  test("Depth 2 limited branching") {
+    val ai = new MinimaxAI {
+      override def children(x: Node, player: Boolean): Seq[Node] =
+        super.children(x, player).take(10)
+    }
+    val movement = ai.getMove(game :: Nil, false, 2)
+    val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
+    assert(movement.spells(false).result === res)
+  }
+
+/*  test("Depth 2") {
+    val movement = ai.getMove(game :: Nil, false, 2)
     val enc = encoded(movement.spells(false).combination map { _._1})
     println(enc)
     assert(true, "It finishes.")
-  }
+  }*/
 }
