@@ -57,7 +57,7 @@ trait WitchcraftNodeGenerator {
   def children_(node: Node, player: Boolean): Seq[Node] = {
     val compositions = combinations map {i =>
       spellComposition(i._1, i._2, i._3, i._4, i._5)
-    } distinct
+    }
 
     compositions map { comp =>
 
