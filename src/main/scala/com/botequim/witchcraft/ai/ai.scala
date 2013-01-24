@@ -26,10 +26,10 @@ import Form._
 trait WitchcraftNodeGenerator {
   type Node = WitchcraftGame
 
-  def combinations: Seq[(Int, Int, Int, Int, Int)] = {
+  def combinations: List[(Int, Int, Int, Int, Int)] = {
     val pointsLimit = WitchcraftGame.pointsPTurnLimit.toInt
     for{
-      reflect <- Seq(0,1)
+      reflect <- List(0,1)
       mCharge <- 0 to (pointsLimit - reflect)
       attack <- 0 +: (4 to (pointsLimit - (reflect + mCharge)))
       defense <- 0 +: (3 to (pointsLimit - (reflect + attack + mCharge)))
@@ -54,7 +54,7 @@ trait WitchcraftNodeGenerator {
        lCircles.toList ::: convex :: concave :: fCircles.toList
   }
 
-  def children_(node: Node, player: Boolean): Seq[Node] = {
+  def children_(node: Node, player: Boolean): List[Node] = {
     val compositions = combinations map {i =>
       spellComposition(i._1, i._2, i._3, i._4, i._5)
     }
@@ -75,7 +75,7 @@ trait WitchcraftNodeGenerator {
         else sx.head :: distinct(sx.tail)
       }
 
-    distinct(children_(node, player).toList)
+    distinct(children_(node, player))
   }
 
   def child(node: Option[Node], spell: List[(Form, Int, Int)],

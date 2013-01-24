@@ -97,7 +97,10 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Test children") {
+    val prev = System.currentTimeMillis
     val cx = FortuneAI.children(game, false)
+    val current = System.currentTimeMillis
+    println("Time = " + (current-prev)/1000.)
     val sx = cx map {
       c => c.spells(false).combination
     }
@@ -148,7 +151,10 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
       override def children(x: Node, player: Boolean): Seq[Node] =
         super.children(x, player).take(10)
     }
+    val prev = System.currentTimeMillis
     val movement = ai.getMove(game :: Nil, false, 2)
+    val current = System.currentTimeMillis
+    println("Time = " + (current-prev)/1000.)
     val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
     assert(movement.spells(false).result === res)
   }
