@@ -61,7 +61,7 @@ trait WitchcraftNodeGenerator {
 
     compositions map { comp =>
 
-      child(Option(node), comp, player) map { _.commit(player) }
+      child_iter(Option(node), comp, player) map { _.commit(player) }
     } filterNot { _ == None } map { _.get }
   }
 
@@ -93,6 +93,16 @@ trait WitchcraftNodeGenerator {
 //    current = System.currentTimeMillis
 //    println("Di = " + (current-prev)/1000.)
     sc
+  }
+
+  def child_iter(node: Option[Node], sx: List[(Form, Int, Int)],
+              player: Boolean): Option[Node] = {
+    var res = node
+    for(x <- sx) {
+      if(x != (Concave, 0, 0) && x != (Convex, 0, 0))
+        res = res flatMap { _.compose(x._1, x._2, x._3, player) }
+    }
+    res
   }
 
   def child(node: Option[Node], spell: List[(Form, Int, Int)],
