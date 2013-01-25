@@ -65,14 +65,23 @@ trait WitchcraftNodeGenerator {
     } filterNot { _ == None } map { _.get }
   }
 
-  def distinct(sx: List[Node], player: Boolean): List[Node] =
-    if(sx == Nil) sx
-    else {
-      if(sx.tail exists {x =>
-        sx.head.spells(player) == x.spells(player)
-      }) distinct(sx.tail, player)
-      else sx.head :: distinct(sx.tail, player)
+  def distinct_iter(sx: List[Node], player: Boolean): List[Node] = {
+    var dist: List[Node] = Nil
+    for(x <- sx) {
+      if(dist forall { _.spells(player).combination != x.spells(player).combination })
+        dist = x :: dist
     }
+    dist
+  }
+
+  def distinct(sx: List[Node], player: Boolean): List[Node] = sx match {
+    case Nil => Nil
+    case y :: sy =>
+      if(sy exists {x =>
+        y.spells(player).combination == x.spells(player).combination
+      }) distinct(sy, player)
+      else y :: distinct(sy, player)
+  }
 
   def children(node: Node, player: Boolean): Seq[Node] = {
 //    var prev = System.currentTimeMillis
@@ -80,7 +89,7 @@ trait WitchcraftNodeGenerator {
 //    var current = System.currentTimeMillis
 //    println("Ch = " + (current-prev)/1000.)
 //    prev = System.currentTimeMillis
-    val sc = distinct(sc_, player)
+    val sc = distinct_iter(sc_, player)
 //    current = System.currentTimeMillis
 //    println("Di = " + (current-prev)/1000.)
     sc
