@@ -100,7 +100,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
     val prev = System.currentTimeMillis
     val cx = FortuneAI.children(game, false)
     val current = System.currentTimeMillis
-    println("Time = " + (current-prev)/1000.)
+    println("Total = " + (current-prev)/1000.)
     val sx = cx map {
       c => c.spells(false).combination
     }

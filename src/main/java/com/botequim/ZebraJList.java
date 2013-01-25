@@ -5,7 +5,11 @@ package com.botequim;
 public class ZebraJList
     extends javax.swing.JList
 {
-    private java.awt.Color rowColors[] = new java.awt.Color[2];
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4330600472047063757L;
+	private java.awt.Color rowColors[] = new java.awt.Color[2];
     private boolean drawStripes = false;
  
     public ZebraJList( )
