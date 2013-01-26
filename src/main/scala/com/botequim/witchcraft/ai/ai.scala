@@ -62,7 +62,7 @@ trait WitchcraftNodeGenerator {
     compositions map { comp =>
 
       child_iter(Option(node), comp, player) map { _.commit(player) }
-    } filterNot { _ == None } map { _.get }
+    } map { _.get }
   }
 
   def distinct_iter(sx: List[Node], player: Boolean): List[Node] = {
