@@ -29,7 +29,7 @@ trait WitchcraftNodeGenerator {
   def combinations: List[(Int, Int, Int, Int, Int)] = {
     val pointsLimit = WitchcraftGame.pointsPTurnLimit.toInt
     for{
-      reflect <- List(0,1)
+      reflect <- List(0)
       mCharge <- 0 to (pointsLimit - reflect)
       attack <- 0 +: (4 to (pointsLimit - (reflect + mCharge)))
       defense <- 0 +: (3 to (pointsLimit - (reflect + attack + mCharge)))
@@ -37,9 +37,9 @@ trait WitchcraftNodeGenerator {
     } yield (reflect, mCharge, attack, defense, charge)
   }
 
-  def spellComposition_direct(reflect: Int, mCharge: Int, attack: Int, defense: Int,
-    charge: Int, node: Node, player: Boolean): Spell = {
     import Effect._
+  def spellComposition_direct(reflect: Int, mCharge: Int, attack: Int, defense: Int,
+    charge: Int): List[(Effect, Int)] = {
 
     var comp: List[(Effect, Int)] = Nil
     if(reflect + mCharge > 0) {
@@ -49,8 +49,11 @@ trait WitchcraftNodeGenerator {
     if(attack > 0) comp ::= (Attack, if(attack == 4) 5 else 2 * attack)
     if(defense > 0) comp ::= (Defense, defense)
     for(i <- 0 until charge) comp ::= (Charge, 1)
-    new Spell(node.spells(player).level, comp)
+    comp
   }
+
+  def toSpell(sx: List[(Effect, Int)], player: Boolean, node: Node): Spell =
+    new Spell(node.spells(player).level, sx)
 
   def child_direct(spell: Spell, player: Boolean, node: Node): Node =
     new WitchcraftGame(node.spells.updated(player, spell),
@@ -58,85 +61,17 @@ trait WitchcraftNodeGenerator {
       node.commits,
       node.gamePoints)
 
-  def spellComposition(reflect: Int, mCharge: Int, attack: Int, defense: Int,
-    charge: Int): List[(Form, Int, Int)] = {
-    val fCircles = 0 until (reflect + mCharge) map { i =>
-      (Circle, 0, 0)
-    }
-    val concave = if(attack > 0){
-      if(attack == 4) (Concave, 4, 1)
-      else (Concave, attack, attack)
-    } else (Concave, 0, 0)
-    val convex = if(defense > 0) (Convex, defense, 0)
-    else (Convex, 0, 0)
-    val lCircles = 0 until (charge) map { i =>
-      (Circle, 0, 0)
-    }
-       lCircles.toList ::: convex :: concave :: fCircles.toList
-  }
-
-  def children_(node: Node, player: Boolean): List[Node] = {
+  def children(node: Node, player: Boolean): List[Node] = {
     val compositions = combinations map {i =>
-      spellComposition_direct(i._1, i._2, i._3, i._4, i._5, node, player)
+      spellComposition_direct(i._1, i._2, i._3, i._4, i._5)
     }
 
     compositions map { spell =>
 
-      child_direct(spell, player, node).commit(player)
+      child_direct(toSpell(spell, player, node), player, node).commit(player)
     }
   }
 
-  def distinct_iter(sx: List[Node], player: Boolean): List[Node] = {
-    var dist: List[Node] = Nil
-    for(x <- sx) {
-      if(dist forall { _.spells(player).combination != x.spells(player).combination })
-        dist = x :: dist
-    }
-    dist
-  }
-
-  def distinct(sx: List[Node], player: Boolean): List[Node] = sx match {
-    case Nil => Nil
-    case y :: sy =>
-      if(sy exists {x =>
-        y.spells(player).combination == x.spells(player).combination
-      }) distinct(sy, player)
-      else y :: distinct(sy, player)
-  }
-
-  def children(node: Node, player: Boolean): Seq[Node] = {
-//    var prev = System.currentTimeMillis
-    val sc_ = children_(node, player)
-//    var current = System.currentTimeMillis
-//    println("Ch = " + (current-prev)/1000.)
-//    prev = System.currentTimeMillis
-    val sc = distinct_iter(sc_, player)
-//    current = System.currentTimeMillis
-//    println("Di = " + (current-prev)/1000.)
-    sc
-  }
-
-  def child_iter(node: Option[Node], sx: List[(Form, Int, Int)],
-              player: Boolean): Option[Node] = {
-    var res = node
-    for(x <- sx) {
-      if(x != (Concave, 0, 0) && x != (Convex, 0, 0))
-        res = res flatMap { _.compose(x._1, x._2, x._3, player) }
-    }
-    res
-  }
-
-  def child(node: Option[Node], spell: List[(Form, Int, Int)],
-              player: Boolean): Option[Node] = spell match {
-    case Nil => node
-    case x :: sx =>
-      if(x == (Concave, 0, 0) || x == (Convex, 0, 0)) {
-        child(node, sx, player)
-      } else
-        child(node flatMap {
-          _.compose(x._1, x._2, x._3, player)
-        }, sx, player)
-  }
 }
 
 trait WitchcraftAI extends AI with WitchcraftNodeGenerator

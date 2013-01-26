@@ -152,60 +152,39 @@ class Spell(lvl: Int, comb: List[(Effect, Int)]) {
   }
 
   lazy val result: Map[Effect, Int] = {
-    val combination = comb.reverse
-    var result: Map[Effect, Int] = Map()
-    val multiplier = lvl + 1
-    //First off, reflect
-    result += Reflect ->
-               ((
-                 if(combination.headOption == Some(Reflect, 1))
-                   1
-                 else
-                   0
-               ) * multiplier)
-
-    def calcAttackDefense(comb: List[(Effect, Int)],
-                          m: Int,
-                          prev: Map[Effect, Int]): Map[Effect, Int] = {
-      var r: Map[Effect, Int] = Map()
-      r ++= prev.filterKeys(k=>{k != Attack && k != Defense})
-      //Next is attack
-      r += Attack -> (prev.get(Attack).getOrElse(0) +
-                 comb.takeWhile(_._1 != Charge)
-                     .filter(_._1 == Attack)
-                     .map(_._2 * m).sum)
-      //Then defense
-      r += Defense -> (prev.get(Defense).getOrElse(0) +
-                 comb.takeWhile(_._1 != Charge)
-                     .filter(_._1 == Defense)
-                     .map(_._2 * m).sum)
-      r
+    val comb = combination.toArray
+    val mult = lvl + 1
+    var lcharge = 0
+    var defense = 0
+    var attack = 0
+    var reflect = 0
+    if(comb.size > 0) {
+      var index = 0
+      while(index < comb.size && comb(index)._1 == Charge) {
+        lcharge += comb(index)._2
+        index += 1
+      }
+      var rIndex = comb.size -1
+      if(comb(rIndex)._1 == Reflect) {
+        reflect = comb(rIndex)._2 * mult
+        rIndex -= 1
+      }
+      var partialCharge = mult
+      while(index <= rIndex) {
+        if(comb(rIndex)._1 == Attack)
+          attack += comb(rIndex)._2 * partialCharge
+        else if(comb(rIndex)._1 == Defense)
+          defense += comb(rIndex)._2 * partialCharge
+        else if(comb(rIndex)._1 == Charge) {
+          partialCharge += comb(rIndex)._2
+        }
+        rIndex -= 1
+      }
     }
-
-    result = calcAttackDefense(combination, multiplier,
-                               result)
-    //Now charge
-    result += Charge -> (combination.reverse.takeWhile(
-                 _._1 == Charge).length)
-    /** Multiplier left out to avoid
-     * GEBOD(Gigant Energy Ball of Death)
-     */
-
-    //Finally fast charges
-
-    def getFChargedSection(list: List[(Effect, Int)]) =
-      list.dropWhile(
-        _._1 != Charge)
-
-    var charged = getFChargedSection(combination)
-    var m = multiplier
-    while(!charged.isEmpty) {
-      m += charged.takeWhile(_._1 == Charge).map(i => 1).sum
-      charged = charged.dropWhile(_._1 == Charge)
-      result = calcAttackDefense(charged, m, result)
-      charged = getFChargedSection(charged)
-    }
-    result
+    Map(Reflect -> reflect,
+      Attack -> attack,
+      Defense -> defense,
+      Charge -> lcharge)
   }
 
   override def toString(): String =
