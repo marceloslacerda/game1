@@ -124,9 +124,7 @@ object Spell {
   def getDefensePower(comb: Map[Effect, Int]) =
     comb(Defense).toFloat
   def getReflectPower(comb: Map[Effect, Int]) =
-    (1. - (1 to comb(Reflect)).map({i =>
-      1./math.pow(2., i)
-    }).sum)
+    1./math.pow(2., comb(Reflect))
   def getChargeLevel(comb: Map[Effect, Int]) =
     comb(Charge)
 }

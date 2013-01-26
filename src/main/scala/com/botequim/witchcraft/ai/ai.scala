@@ -38,7 +38,7 @@ trait WitchcraftNodeGenerator {
   }
 
     import Effect._
-  def spellComposition_direct(reflect: Int, mCharge: Int, attack: Int, defense: Int,
+  def spellComposition(reflect: Int, mCharge: Int, attack: Int, defense: Int,
     charge: Int): List[(Effect, Int)] = {
 
     var comp: List[(Effect, Int)] = Nil
@@ -55,20 +55,16 @@ trait WitchcraftNodeGenerator {
   def toSpell(sx: List[(Effect, Int)], player: Boolean, node: Node): Spell =
     new Spell(node.spells(player).level, sx)
 
-  def child_direct(spell: Spell, player: Boolean, node: Node): Node =
+  def child(spell: Spell, player: Boolean, node: Node): Node =
     new WitchcraftGame(node.spells.updated(player, spell),
       node.turnPoints,
       node.commits,
       node.gamePoints)
 
   def children(node: Node, player: Boolean): List[Node] = {
-    val compositions = combinations map {i =>
-      spellComposition_direct(i._1, i._2, i._3, i._4, i._5)
-    }
-
-    compositions map { spell =>
-
-      child_direct(toSpell(spell, player, node), player, node).commit(player)
+    combinations map {i =>
+      val sc = spellComposition(i._1, i._2, i._3, i._4, i._5)
+      child(toSpell(sc, player, node), player, node).commit(player)
     }
   }
 

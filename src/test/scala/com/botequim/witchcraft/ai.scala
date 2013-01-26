@@ -33,7 +33,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val comp = FortuneAI.spellComposition_direct(reflect, mCharge, attack, defense, charge)
+    val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge)
     assert(FortuneAI.toSpell(comp, false, game).result ===
       Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
                Reflect -> eReflect))
@@ -72,10 +72,10 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   test("Test combinations") {
     val combs = FortuneAI.combinations
-    assert(combs.contains((0, 0, 0, 0, 10)))
-    assert(combs.contains((1, 0, 4, 4, 1)))
-    assert(combs.contains((1, 0, 5, 3, 1)))
-    assert(combs.contains((1, 0, 9, 0, 0)))
+    assert(combs.contains((0, 1, 0, 0, 9)))
+    assert(combs.contains((0, 1, 4, 4, 1)))
+    assert(combs.contains((0, 1, 5, 3, 1)))
+    assert(combs.contains((0, 1, 9, 0, 0)))
     assert(combs.distinct.size === combs.size, "There is no combination repetition")
 
   }
