@@ -33,14 +33,10 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge).reverse
-    FortuneAI.child(Option(game), comp, false) match {
-      case Some(node) =>
-        assert(node.spells(false).result ===
-               Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
+    val spell = FortuneAI.spellComposition_direct(reflect, mCharge, attack, defense, charge, game, false)
+    assert(spell.result ===
+      Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
                Reflect -> eReflect))
-      case None => assert(false, "Cannot compose")
-    }
   }
 
   test("Empty child.") {
@@ -105,6 +101,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
       c => c.spells(false).combination
     }
     println("Children size: " + sx.size)
+    sx foreach {x => println(x)}
     assert(sx.size === sx.distinct.size, "There is no spell repetition")
     assert(cx.exists {_.spells(false).result == Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 21)}, "Missing 1")
   }

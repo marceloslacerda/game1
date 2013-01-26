@@ -19,7 +19,7 @@
 
 package com.botequim.witchcraft.ai
 
-import com.botequim.witchcraft.rules.{WitchcraftGame, Form}
+import com.botequim.witchcraft.rules._
 import com.botequim.ai.AI
 import Form._
 
@@ -36,6 +36,27 @@ trait WitchcraftNodeGenerator {
       charge = pointsLimit - (reflect + attack + defense + mCharge)
     } yield (reflect, mCharge, attack, defense, charge)
   }
+
+  def spellComposition_direct(reflect: Int, mCharge: Int, attack: Int, defense: Int,
+    charge: Int, node: Node, player: Boolean): Spell = {
+    import Effect._
+
+    var comp: List[(Effect, Int)] = Nil
+    if(reflect + mCharge > 0) {
+      comp ::= (Reflect, 1)
+      for(i <- 0 until (reflect + mCharge -1 )) comp ::= (Charge, 1)
+    }
+    if(attack > 0) comp ::= (Attack, if(attack == 4) 5 else 2 * attack)
+    if(defense > 0) comp ::= (Defense, defense)
+    for(i <- 0 until charge) comp ::= (Charge, 1)
+    new Spell(node.spells(player).level, comp)
+  }
+
+  def child_direct(spell: Spell, player: Boolean, node: Node): Node =
+    new WitchcraftGame(node.spells.updated(player, spell),
+      node.turnPoints,
+      node.commits,
+      node.gamePoints)
 
   def spellComposition(reflect: Int, mCharge: Int, attack: Int, defense: Int,
     charge: Int): List[(Form, Int, Int)] = {
@@ -56,13 +77,13 @@ trait WitchcraftNodeGenerator {
 
   def children_(node: Node, player: Boolean): List[Node] = {
     val compositions = combinations map {i =>
-      spellComposition(i._1, i._2, i._3, i._4, i._5)
+      spellComposition_direct(i._1, i._2, i._3, i._4, i._5, node, player)
     }
 
-    compositions map { comp =>
+    compositions map { spell =>
 
-      child_iter(Option(node), comp, player) map { _.commit(player) }
-    } map { _.get }
+      child_direct(spell, player, node).commit(player)
+    }
   }
 
   def distinct_iter(sx: List[Node], player: Boolean): List[Node] = {

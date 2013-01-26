@@ -134,6 +134,7 @@ object Spell {
 class Spell(lvl: Int, comb: List[(Effect, Int)]) {
   def combination = comb
   def isEmpty = comb.isEmpty
+  def level = lvl
   def ::(elem: (Effect, Int)) =
     new Spell(lvl, elem :: combination)
 
