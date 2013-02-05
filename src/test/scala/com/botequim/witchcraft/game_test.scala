@@ -49,37 +49,37 @@ been exceeded.""") {
   test("""Compose returns a None when the number of points for the player have
 been exceeded.""") {
     game = new WitchcraftGame(Map(true -> Spell(), false -> Spell()),
-                              Map(true -> 0.f, false -> 10.f),
+                              Map(true -> 0d, false -> 10d),
                               Map(true -> false, false -> false),
-                              Map(true -> 10.f, false -> 88.f))
+                              Map(true -> 10d, false -> 88d))
     assert(game.compose(Circle, 0, 0, true) === None)
   }
 
   test("""Game points never reaches below zero.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              Map(true -> 10.f, false -> 10.f),
+                              Map(true -> 10d, false -> 10d),
                               Map(true -> true, false -> true),
-                              Map(true -> 4.f, false -> 88.f))
+                              Map(true -> 4d, false -> 88d))
     game = getAndTestAftermath(game.getAftermath)
-    assert(game.gamePoints(true) === 0.f)
+    assert(game.gamePoints(true) === 0d)
   }
 
   test("""Game points is decreased by turn points.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              Map(true -> 10.f, false -> 10.f),
+                              Map(true -> 10d, false -> 10d),
                               Map(true -> true, false -> true),
-                              Map(true -> 4.f, false -> 88.f))
+                              Map(true -> 4d, false -> 88d))
     game = getAndTestAftermath(game.getAftermath)
-    assert(game.gamePoints(false) === 78.f)
+    assert(game.gamePoints(false) === 78d)
   }
 
   test("""Game returns none if one player don't commit.""") {
     val prms = (Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              Map(true -> 10.f, false -> 10.f),
-                              Map(true -> 4.f, false -> 88.f))
+                              Map(true -> 10d, false -> 10d),
+                              Map(true -> 4d, false -> 88d))
     val g1 = new WitchcraftGame(prms._1, prms._2,
       Map(true -> false, false -> false), prms._3)
     val g2 = new WitchcraftGame(prms._1, prms._2,
@@ -98,11 +98,11 @@ been exceeded.""") {
 account the reflection shield.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
-                              Map(true -> 10.f, false -> 10.f),
+                              Map(true -> 10d, false -> 10d),
                               Map(true -> true, false -> true),
-                              Map(true -> 88.f, false -> 88.f))
+                              Map(true -> 88d, false -> 88d))
     game = game.getAftermath.get
-    assert(game.gamePoints(true) === 74.f)
+    assert(game.gamePoints(true) === 74d)
   }
 
   test("""Entire game session works as expected""") {
@@ -130,8 +130,8 @@ account the reflection shield.""") {
         }
       }
     }
-    assert(sx.last._1.get.gamePoints(false) >= 10.f, "Overall inert player")
-    assert(sx.last._1.get.gamePoints(true) > 10.f, "Overall active player")
+    assert(sx.last._1.get.gamePoints(false) >= 10d, "Overall inert player")
+    assert(sx.last._1.get.gamePoints(true) > 10d, "Overall active player")
   }
 
   def getAndTestCompose(o: Option[WitchcraftGame]) ={

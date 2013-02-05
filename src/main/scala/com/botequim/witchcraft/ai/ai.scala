@@ -26,25 +26,47 @@ import Form._
 trait WitchcraftNodeGenerator {
   type Node = WitchcraftGame
 
-  def combinations: List[(Int, Int, Int, Int, Int)] = {
+  def combinations_foul: Seq[(Int, Int, Int, Int)] = {
+    val limit = WitchcraftGame.pointsPTurnLimit.toInt
+    var mCharge, attack, defense, charge, i = 0
+    val arr = Array.ofDim[(Int, Int, Int, Int)](56)
+    while(mCharge <= limit) {
+      attack = 0
+      while(attack <= limit - mCharge - 3) {
+        defense = 0
+        while(defense <= limit - mCharge - attack - 5) {
+          charge = limit - mCharge - attack - 5
+          //println("i " + i)
+                      arr(i) =(mCharge, attack + 4, defense + 3, charge)
+            charge += 1
+            i += 1
+          defense += 1
+        }
+        attack += 1
+      }
+      mCharge += 1
+    }
+    arr
+  }
+
+  def combinations: Seq[(Int, Int, Int, Int)] = {
     val pointsLimit = WitchcraftGame.pointsPTurnLimit.toInt
     for{
-      reflect <- List(0)
-      mCharge <- 0 to (pointsLimit - reflect)
-      attack <- 0 +: (4 to (pointsLimit - (reflect + mCharge)))
-      defense <- 0 +: (3 to (pointsLimit - (reflect + attack + mCharge)))
-      charge = pointsLimit - (reflect + attack + defense + mCharge)
-    } yield (reflect, mCharge, attack, defense, charge)
+      mCharge <- 0 to pointsLimit
+      attack <- 0 +: (4 to (pointsLimit - mCharge))
+      defense <- 0 +: (3 to (pointsLimit - (attack + mCharge)))
+      charge = pointsLimit - (attack + defense + mCharge)
+    } yield (mCharge, attack, defense, charge)
   }
 
     import Effect._
-  def spellComposition(reflect: Int, mCharge: Int, attack: Int, defense: Int,
+  def spellComposition(mCharge: Int, attack: Int, defense: Int,
     charge: Int): List[(Effect, Int)] = {
 
     var comp: List[(Effect, Int)] = Nil
-    if(reflect + mCharge > 0) {
+    if(mCharge > 0) {
       comp ::= (Reflect, 1)
-      for(i <- 0 until (reflect + mCharge -1 )) comp ::= (Charge, 1)
+      if(mCharge > 1) comp ::= (Charge, mCharge - 1)
     }
     if(attack > 0) comp ::= (Attack, if(attack == 4) 5 else 2 * attack)
     if(defense > 0) comp ::= (Defense, defense)
@@ -61,9 +83,9 @@ trait WitchcraftNodeGenerator {
       node.commits,
       node.gamePoints)
 
-  def children(node: Node, player: Boolean): List[Node] = {
-    combinations map {i =>
-      val sc = spellComposition(i._1, i._2, i._3, i._4, i._5)
+  def children(node: Node, player: Boolean): Seq[Node] = {
+    combinations_foul map {i =>
+      val sc = spellComposition(i._1, i._2, i._3, i._4)
       child(toSpell(sc, player, node), player, node).commit(player)
     }
   }

@@ -24,13 +24,10 @@ import com.botequim.ai.Minimax
 
 class MinimaxAI extends WitchcraftAI{
   def isTerminal(node: Node): Boolean =
-    node.gamePoints(true) == 0.f ||
-    node.gamePoints(false) == 0.f
-/*  override def children(n: Node, player: Player): Seq[Node] =
-    super.children(n, player) flatMap { i =>
-      super.children(i, !player)
-    }*/
-  def fae(n: Node, player: Boolean): Float =
+    node.gamePoints(true) == 0d ||
+    node.gamePoints(false) == 0d
+
+  def fae(n: Node, player: Boolean): Double =
     n.gamePoints(!player) - n.gamePoints(player)
 
   def max(sx: Seq[Node], player: Boolean, depth: Int): Node = {

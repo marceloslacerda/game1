@@ -142,7 +142,7 @@ def popSpell(p: Boolean) {
       val result = game.getAftermathCalculus(player)
       pPoints._2.text = result("pPoints")
       sfList(0)._2.text = result("eAtk")
-      sfList(1)._2.text = (1. - result("pRefl")) * 100 + "%"
+      sfList(1)._2.text = (1 - result("pRefl")) * 100 + "%"
       sfList(2)._2.text = result("ePartial")
       sfList(3)._2.text = result("pDef")
       sfList(4)._2.text = result("eFinal")

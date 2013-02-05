@@ -60,8 +60,8 @@ class Canvas(canvasSize: Int) {
     for{i <- 0 until seqlines.size
         j <- 0 until seqlines.size
         if(i < j)
-        val (x1,y1,x2,y2) = seqlines(i)
-        val (x3,y3,x4,y4) = seqlines(j)
+        (x1,y1,x2,y2) = seqlines(i)
+        (x3,y3,x4,y4) = seqlines(j)
         if Line2D.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
     } inter += 1
     inter - lines.size
@@ -148,7 +148,7 @@ class Canvas(canvasSize: Int) {
   def linesWithPoint(p: Point): Seq[Line] =
     for{
       l <- (lines.toSeq)
-      val (x1, y1, x2, y2) = l
+      (x1, y1, x2, y2) = l
       if(x1 == p._1 && y1 == p._2
          || x2 == p._1 && y2 == p._2)
     } yield l
