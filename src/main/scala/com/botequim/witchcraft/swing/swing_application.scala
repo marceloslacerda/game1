@@ -2,17 +2,17 @@
  * Copyright 2013 Marcelo de Sena Lacerda
  *
  * This file is part of Witchcraft.
- * 
+ *
  * Witchcraft is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Witchcraft is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Witchcraft.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -36,12 +36,12 @@ object WitchcraftApp extends SimpleSwingApplication {
   val enemySpell = new Label()
   def eBMaker = new Button(Action("Exit")(onExit))
   val exitButton = eBMaker
-  val cSize = (windowSize.height * 0.70) toInt
+  val cSize = (windowSize.height * 0.70).toInt
   val board: WitchcraftBoard = new WitchcraftBoard {
     override lazy val canvas = new Canvas(cSize)
     def changeTPoints(tp: String) {
       availTPointsLabel.text = tp
-    }  
+    }
   }
 
   def formReady() {
@@ -49,7 +49,7 @@ object WitchcraftApp extends SimpleSwingApplication {
   }
 
   def boardCleared() {
-    nextForm.enabled = false    
+    nextForm.enabled = false
   }
 
   def onExit() {
@@ -66,7 +66,7 @@ object WitchcraftApp extends SimpleSwingApplication {
     }
 
   }
-  
+
   def playTwo(){
     top.contents = gamePanel
   }
@@ -127,7 +127,7 @@ object WitchcraftApp extends SimpleSwingApplication {
     commitButton.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
     apPanel.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
     exitButton.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
-    
+
     contents ++ List(
       RigidBox((0,h+11)),
       nextForm,

@@ -26,32 +26,9 @@ import Form._
 trait WitchcraftNodeGenerator {
   type Node = WitchcraftGame
 
-  def combinations_foul: Seq[(Int, Int, Int, Int)] = {
-    val limit = WitchcraftGame.pointsPTurnLimit.toInt
-    var mCharge, attack, defense, charge, i = 0
-    val arr = Array.ofDim[(Int, Int, Int, Int)](56)
-    while(mCharge <= limit) {
-      attack = 0
-      while(attack <= limit - mCharge - 3) {
-        defense = 0
-        while(defense <= limit - mCharge - attack - 5) {
-          charge = limit - mCharge - attack - 5
-          //println("i " + i)
-                      arr(i) =(mCharge, attack + 4, defense + 3, charge)
-            charge += 1
-            i += 1
-          defense += 1
-        }
-        attack += 1
-      }
-      mCharge += 1
-    }
-    arr
-  }
-
-  def combinations: Seq[(Int, Int, Int, Int)] = {
+  val combinations: Seq[(Int, Int, Int, Int)] = {
     val pointsLimit = WitchcraftGame.pointsPTurnLimit.toInt
-    for{
+    for {
       mCharge <- 0 to pointsLimit
       attack <- 0 +: (4 to (pointsLimit - mCharge))
       defense <- 0 +: (3 to (pointsLimit - (attack + mCharge)))
@@ -74,6 +51,10 @@ trait WitchcraftNodeGenerator {
     comp
   }
 
+  val preparedCompositions = combinations map { i =>
+      spellComposition(i._1, i._2, i._3, i._4)
+  }
+
   def toSpell(sx: List[(Effect, Int)], player: Boolean, node: Node): Spell =
     new Spell(node.spells(player).level, sx)
 
@@ -84,9 +65,8 @@ trait WitchcraftNodeGenerator {
       node.gamePoints)
 
   def children(node: Node, player: Boolean): Seq[Node] = {
-    combinations_foul map {i =>
-      val sc = spellComposition(i._1, i._2, i._3, i._4)
-      child(toSpell(sc, player, node), player, node).commit(player)
+    preparedCompositions map {i =>
+      child(toSpell(i, player, node), player, node).commit(player)
     }
   }
 
