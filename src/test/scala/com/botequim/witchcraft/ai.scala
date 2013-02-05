@@ -33,7 +33,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)
                             (eReflect: Int, eAttack: Int, eDefense: Int, eCharge: Int) {
-    val comp = FortuneAI.spellComposition(reflect, mCharge, attack, defense, charge)
+    val comp = FortuneAI.spellComposition(reflect + mCharge, attack, defense, charge)
     assert(FortuneAI.toSpell(comp, false, game).result ===
       Map(Attack -> eAttack, Defense -> eDefense, Charge -> eCharge,
                Reflect -> eReflect))
@@ -96,7 +96,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
     val prev = System.currentTimeMillis
     val cx = FortuneAI.children(game, false)
     val current = System.currentTimeMillis
-    println("Total = " + (current-prev)/1000.)
+    println("Total = " + (current-prev)/1000)
     val sx = cx map {
       c => c.spells(false).combination
     }
@@ -108,6 +108,12 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   test("Test minimal move") {
     val minimalVal = FortuneAI.getMove(Seq(game), false).getAftermathCalculus(true)("pFinal")
     assert(minimalVal === 40)
+  }
+
+  test("Test foul combination") {
+    val combs = FortuneAI.combinations_foul
+    println(combs.size)
+    println(combs)
   }
 }
 
@@ -144,13 +150,13 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
 
   test("Depth 2 limited branching") {
     val ai = new MinimaxAI {
-      override def children(x: Node, player: Boolean): List[Node] =
-        super.children(x, player).take(20)
+      override def children(x: Node, player: Boolean) =
+        super.children(x, player).take(40)
     }
     val prev = System.currentTimeMillis
     val movement = ai.getMove(game :: Nil, false, 2)
     val current = System.currentTimeMillis
-    println("Time = " + (current-prev)/1000.)
+    println("Time = " + (current-prev)/1000)
     val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
     assert(movement.spells(false).result === res)
   }
