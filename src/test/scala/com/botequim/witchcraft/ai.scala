@@ -72,10 +72,10 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
 
   test("Test combinations") {
     val combs = FortuneAI.combinations
-    assert(combs.contains((0, 1, 0, 0, 9)))
-    assert(combs.contains((0, 1, 4, 4, 1)))
-    assert(combs.contains((0, 1, 5, 3, 1)))
-    assert(combs.contains((0, 1, 9, 0, 0)))
+    assert(combs.contains((0, 0, 0, 10)))
+    assert(combs.contains((1, 4, 4, 1)))
+    assert(combs.contains((1, 5, 3, 1)))
+    assert(combs.contains((1, 9, 0, 0)))
     assert(combs.distinct.size === combs.size, "There is no combination repetition")
 
   }
@@ -127,14 +127,6 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     assert(c.length === 26896)
     println("Ok done")
   }*/
-  def groupSame[T](sx: List[T]): List[List[T]] = sx match {
-    case Nil => Nil
-    case y :: sy =>
-      val (first, rest) = sx span {_ == y}
-      first :: groupSame(rest)
-  }
-  def encoded[T](sx: List[T]): List[(T, Int)] =
-    groupSame(sx) map { x => (x.head, x.size) }
 
   test("Depth 1") {
     val movement =  ai.getMove(game :: Nil, false, 1)

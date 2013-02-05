@@ -51,9 +51,9 @@ trait WitchcraftNodeGenerator {
     comp
   }
 
-  val preparedCompositions = combinations map { i =>
+  val preparedCompositions = combinations.map({ i =>
       spellComposition(i._1, i._2, i._3, i._4)
-  }
+  }).distinct
 
   def toSpell(sx: List[(Effect, Int)], player: Boolean, node: Node): Spell =
     new Spell(node.spells(player).level, sx)
