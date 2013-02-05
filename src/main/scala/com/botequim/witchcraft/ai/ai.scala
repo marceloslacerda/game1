@@ -41,14 +41,21 @@ trait WitchcraftNodeGenerator {
     charge: Int): List[(Effect, Int)] = {
 
     var comp: List[(Effect, Int)] = Nil
-    if(mCharge > 0) {
+    if(attack == 0 && defense ==0) {
       comp ::= (Reflect, 1)
-      if(mCharge > 1) comp ::= (Charge, mCharge - 1)
+      comp ::= (Charge, charge + mCharge - 1)
+      comp
     }
-    if(attack > 0) comp ::= (Attack, if(attack == 4) 5 else 2 * attack)
-    if(defense > 0) comp ::= (Defense, defense)
-    for(i <- 0 until charge) comp ::= (Charge, 1)
-    comp
+    else {
+      if(mCharge > 0) {
+        comp ::= (Reflect, 1)
+        if(mCharge > 1) comp ::= (Charge, mCharge - 1)
+      }
+      if(attack > 0) comp ::= (Attack, if(attack == 4) 5 else 2 * attack)
+      if(defense > 0) comp ::= (Defense, defense)
+      comp ::= (Charge, charge)
+      comp
+    }
   }
 
   val preparedCompositions = combinations.map({ i =>

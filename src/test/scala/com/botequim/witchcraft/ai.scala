@@ -40,7 +40,7 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Empty child.") {
-    assertEqualTurnResult(0, 0, 0, 0, 0)(0, 0, 0, 0)
+    assertEqualTurnResult(1, 0, 0, 0, 0)(1, 0, 0, 0)
   }
 
   test("Test attack") {
