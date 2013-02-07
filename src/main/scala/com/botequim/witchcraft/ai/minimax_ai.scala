@@ -31,7 +31,8 @@ class MinimaxAI extends WitchcraftAI{
     n.gamePoints(!player) - n.gamePoints(player)
 
   def max(sx: Seq[Node], player: Boolean, depth: Int): Node = {
-    if(depth == 0) sx.head
+    if(depth == 0)
+      throw new UnsupportedOperationException("Cannot calc max with depth 0")
     sx maxBy { x =>
       val sc = children(x, !player) map { _.getAftermath.get } 
       fae(min(sc, player, depth -1), player)
@@ -64,8 +65,4 @@ class MinimaxAI extends WitchcraftAI{
       fae(min, player)
     }
   }
-/*    children(sx.head, player) map {
-      i => (apply(i, 1, player), i)
-    } minBy {_._1} _2
-  }*/
 }

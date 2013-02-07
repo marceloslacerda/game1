@@ -128,6 +128,12 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     println("Ok done")
   }*/
 
+  test("Depth 0") {
+    intercept[UnsupportedOperationException] {
+      ai.getMove(game :: Nil, false, 0)
+    }
+  }
+
   test("Depth 1") {
     val movement =  ai.getMove(game :: Nil, false, 1)
     val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
