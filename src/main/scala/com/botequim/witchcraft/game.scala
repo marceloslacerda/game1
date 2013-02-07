@@ -190,8 +190,8 @@ class Spell(lvl: Int, comb: List[(Effect, Int)]) {
   }
 
   override def toString(): String =
-    comb.head._1 + ": " + comb.head._2
+    toStringList.mkString("\n")
 
-  def toStringList(): List[String] =
+  def toStringList: List[String] =
     comb.reverse map {i => i._1 + ": " + i._2}
 }

@@ -71,8 +71,8 @@ trait WitchcraftNodeGenerator {
       node.commits,
       node.gamePoints)
 
-  def children(node: Node, player: Boolean): Seq[Node] = {
-    preparedCompositions map {i =>
+  def children(node: Node, player: Boolean) = {
+    preparedCompositions.view map {i =>
       child(toSpell(i, player, node), player, node).commit(player)
     }
   }

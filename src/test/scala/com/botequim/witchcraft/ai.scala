@@ -97,8 +97,8 @@ class FortuneAISuite extends FunSuite with BeforeAndAfter {
     val cx = FortuneAI.children(game, false)
     val current = System.currentTimeMillis
     println("Total = " + (current-prev)/1000d)
-    val sx = cx map {
-      c => c.spells(false).combination
+    val sx = cx.force map {
+      _.spells(false).combination
     }
     println("Children size: " + sx.size)
     assert(sx.size === sx.distinct.size, "There is no spell repetition")
@@ -134,6 +134,10 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     }
   }
 
+  test("Test minimax search") {
+
+  }
+
   test("Depth 1") {
     val movement =  ai.getMove(game :: Nil, false, 1)
     val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
@@ -152,11 +156,4 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     val res = Map(Reflect -> 1, Charge -> 0, Attack -> 0, Defense -> 25)
     assert(movement.spells(false).result === res)
   }
-
-/*  test("Depth 2") {
-    val movement = ai.getMove(game :: Nil, false, 2)
-    val enc = encoded(movement.spells(false).combination map { _._1})
-    println(enc)
-    assert(true, "It finishes.")
-  }*/
 }
