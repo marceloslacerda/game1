@@ -10,6 +10,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"/*, "-Xprint:typer
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-swing" % "2.10.0",
+    "com.dongxiguo" %% "zero-log" % "0.3.3",
     "com.miglayout" % "miglayout-swing" % "4.2",
     "org.scalatest" %% "scalatest" % "1.9.1" % "test"
 )

@@ -119,23 +119,33 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     game = WitchcraftGame.apply
   }
 
-/*  test("Test branching size") {
-    val before = Runtime.getRuntime().freeMemory
-    val c = MinimaxAI.children(game, false)
-    val used = Runtime.getRuntime().freeMemory - before
-    println("%s MB used".format(used/1000/1000))
-    assert(c.length === 26896)
-    println("Ok done")
-  }*/
+  object TestMinimax extends MinimaxAlgorithm[Int] {
+    type Node = Int
+    var calls = -1
+    def isTerminal(n: Node) = n == 0 || n == 10
+    def victoryOrDraw(n: Node, p: Boolean) = eval(n, p) == 10.0
+    def eval(n: Node, p: Boolean) = n.toDouble
+    def children(n: Node, player: Boolean): Seq[Node] = {
+      calls += 1
+      calls match {
+        case 0 => Seq(1, 2, 3)
+        case 1 => Seq(7, 0, 1)
+        case 2 => Seq(5, 4, 10)
+      }
+    }
+
+    def getMove(n: Node, player: Boolean, depth: Int): Node =
+      max(Seq(1, 2, 3), player, depth)
+  }
+
+  test("Test minimax search") {
+    assert(TestMinimax.getMove(1 , true, 1) === 3)
+  }
 
   test("Depth 0") {
     intercept[UnsupportedOperationException] {
       ai.getMove(game :: Nil, false, 0)
     }
-  }
-
-  test("Test minimax search") {
-
   }
 
   test("Depth 1") {
