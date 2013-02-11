@@ -155,10 +155,7 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Depth 2 limited branching") {
-    val ai = new MinimaxAI {
-      override def children(x: Node, player: Boolean) =
-        super.children(x, player).take(10)
-    }
+    val ai = new MinimaxAlphaBetaAI()
     val prev = System.currentTimeMillis
     val movement = ai.getMove(game :: Nil, false, 2)
     val current = System.currentTimeMillis

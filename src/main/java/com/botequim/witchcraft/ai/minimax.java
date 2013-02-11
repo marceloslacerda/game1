@@ -43,3 +43,53 @@ abstract class MinimaxAlgorithm<Node> {
         return minNode;
     }
 }
+
+abstract class AlphaBetaMinimax<Node> {
+    abstract public boolean isTerminal(Node n);
+    abstract public boolean victoryOrDraw(Node n, boolean player);
+    abstract public double eval(Node n,  boolean player);
+    abstract public Seq<Node> children(Node n, boolean player);
+    public Node max(Seq<Node> sx, boolean player, int depth, double alpha, double beta) {
+        double a = alpha;
+        double b = beta;
+        if(depth == 0)
+            throw new UnsupportedOperationException("Cannot calc max with depth 0");
+        //        System.out.println("Depth: " + depth);
+        Node maxNode = sx.head();
+        double maxEval = Double.NEGATIVE_INFINITY;
+        double newEval;
+        for(Node n : JavaConversions.asJavaIterable(sx)) {
+            newEval = eval(min(children(n, !player), player, depth - 1, a, b), player);
+            //  System.out.println("Node: " + n + " Eval: " + newEval);
+            if(newEval > maxEval) {
+                maxEval = newEval;
+                maxNode = n;
+            }
+            if(newEval >= b) return n;
+            if(newEval > a) a = newEval;
+        }
+        return maxNode;
+    }
+    public Node min(Seq<Node> sx, boolean player, int depth, double alpha, double beta) {
+        double a = alpha;
+        double b = beta;
+        Node minNode = sx.head();
+        double minEval = Double.POSITIVE_INFINITY;
+        double newEval;
+        for(Node n : JavaConversions.asJavaIterable(sx)) {
+            if(isTerminal(n)) {
+                if(victoryOrDraw(n, player)) continue; // Infinity so, never picked
+                else return n; // Defeat is the minimum possible value
+            }
+            if(depth == 0) newEval = eval(n, player);
+            else newEval = eval(max(children(n, player), player, depth, a, b), player);
+            if(newEval < minEval) {
+                minEval = newEval;
+                minNode = n;
+            }
+            if(newEval <= a) return n;
+            if(newEval <= b) b = newEval;
+        }
+        return minNode;
+    }
+}
