@@ -193,5 +193,10 @@ class Spell(lvl: Int, comb: List[(Effect, Int)]) {
     toStringList.mkString("\n")
 
   def toStringList: List[String] =
-    comb.reverse map {i => i._1 + ": " + i._2}
+    comb.reverse map {i => partString(i)}
+
+  def partString(part: (Effect, Int)) =
+    part._1 + ": " + part._2
+
+  def headString = partString(comb.head)
 }

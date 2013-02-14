@@ -78,7 +78,7 @@ object WitchcraftApp extends SimpleSwingApplication {
 
   def playExperimental(){
     top.contents = gamePanel
-    board.ai = Option(new com.botequim.witchcraft.ai.MinimaxAI())
+    board.ai = Option(new com.botequim.witchcraft.ai.MinimaxAlphaBetaAI())
   }
 
   def gamePanel = new BorderPanel {
@@ -128,7 +128,7 @@ object WitchcraftApp extends SimpleSwingApplication {
     apPanel.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
     exitButton.peer.setAlignmentX(java.awt.Component.RIGHT_ALIGNMENT)
 
-    contents ++ List(
+    contents ++= List(
       RigidBox((0,h+11)),
       nextForm,
       RigidBox((0,h+11)),
@@ -144,7 +144,7 @@ object WitchcraftApp extends SimpleSwingApplication {
   def availPointsPanel = new BoxPanel(Orientation.Vertical) {
     availTPointsLabel.peer.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT)
     border = Swing.TitledBorder(Swing.LineBorder(java.awt.Color.black), "Available points")
-    contents ++ List(
+    contents ++= List(
       availTPointsLabel
     )
   }

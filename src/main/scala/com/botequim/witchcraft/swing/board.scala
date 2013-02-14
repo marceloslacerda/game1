@@ -52,7 +52,7 @@ trait WitchcraftBoard {
   }
 
   def addSpellToList(s: Spell) {
-    spellPanel.addSpell(s.toString, player)
+    spellPanel.addSpell(s.headString, player)
   }
   def clearSpellList() {
     spellPanel.clearSpells()
