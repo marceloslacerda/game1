@@ -20,14 +20,14 @@
 package org.botequim.game1.ai
 
 import org.scalatest.{FunSuite, BeforeAndAfter}
-import org.botequim.game1.rules.{WitchcraftGame, Effect, Form, Spell}
+import org.botequim.game1.rules.{Game, Effect, Form, Spell}
 import Effect._
 
 class FortuneAISuite extends FunSuite with BeforeAndAfter {
-  var game: WitchcraftGame = _
+  var game: Game = _
 
   before {
-    game = WitchcraftGame.apply
+    game = Game.apply
   }
 
   def assertEqualTurnResult(reflect: Int, mCharge: Int, attack: Int, defense: Int, charge: Int)

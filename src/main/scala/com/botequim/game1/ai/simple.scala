@@ -19,10 +19,10 @@
 
 package org.botequim.game1.ai
 
-import org.botequim.game1.rules.{WitchcraftGame, Form}
+import org.botequim.game1.rules.Form
 import scala.util.Random
 
-object FortuneAI extends WitchcraftAI {
+object FortuneAI extends AI {
   def getMove(sx: Seq[Node], player: Boolean): Node = {
     val grouped = children(sx.head, player).groupBy[Double] { n => n.getAftermathCalculus(true)("pFinal") }
     val minimal = grouped(grouped.keys.min)
@@ -30,7 +30,7 @@ object FortuneAI extends WitchcraftAI {
   }
 }
 
-object RandomAI extends WitchcraftAI {
+object RandomAI extends AI {
   def getMove(sx: Seq[Node], player: Boolean): Node = {
     children(sx.head, player)(Random.nextInt(60))
   }

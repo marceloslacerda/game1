@@ -22,14 +22,14 @@ package org.botequim.game1.swing
 import scala.swing.Panel
 import collection.mutable.Stack
 import org.botequim.game1._
-import rules.{WitchcraftGame, Spell, Form}
-import ai.WitchcraftAI
+import rules.{Game, Spell, Form}
+import ai.AI
 import Form._
 
-trait WitchcraftBoard {
-  val gameStates = Stack(WitchcraftGame())
+trait Board {
+  val gameStates = Stack(Game())
   val gameHistory = Stack(gameStates.head)
-  var ai: Option[WitchcraftAI] = None
+  var ai: Option[AI] = None
   lazy val canvas = new Canvas()
   val spellPanel = new SpellPanel()
   var player = true
@@ -63,7 +63,7 @@ trait WitchcraftBoard {
     gameStates.head.turnPoints(player) -
       (if(canvas.circle) 1 else canvas.points.size)
 
-  def clearStatesWith(g: WitchcraftGame) {
+  def clearStatesWith(g: Game) {
     gameStates.elems = g :: Nil
   }    
 
@@ -83,7 +83,7 @@ trait WitchcraftBoard {
     }
   }
 
-  def aiMove(ai: WitchcraftAI) {
+  def aiMove(ai: AI) {
     clearStatesWith(ai.getMove(gameHistory.tail, player))
     gameHistory push gameStates.head
     val aiBol = !player

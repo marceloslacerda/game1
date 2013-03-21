@@ -20,14 +20,13 @@
 package org.botequim.game1.ai
 
 import org.botequim.game1.rules._
-import org.botequim.ai.AI
 import Form._
 
-trait WitchcraftNodeGenerator {
-  type Node = WitchcraftGame
+trait NodeGenerator {
+  type Node = Game
 
   val combinations: Seq[(Int, Int, Int, Int)] = {
-    val pointsLimit = WitchcraftGame.pointsPTurnLimit.toInt
+    val pointsLimit = Game.pointsPTurnLimit.toInt
     for {
       mCharge <- 1 to pointsLimit
       attack <- 0 +: (4 to (pointsLimit - mCharge))
@@ -66,7 +65,7 @@ trait WitchcraftNodeGenerator {
     new Spell(node.spells(player).level, sx)
 
   def child(spell: Spell, player: Boolean, node: Node): Node =
-    new WitchcraftGame(node.spells.updated(player, spell),
+    new Game(node.spells.updated(player, spell),
       node.turnPoints,
       node.commits,
       node.gamePoints)
@@ -79,4 +78,4 @@ trait WitchcraftNodeGenerator {
 
 }
 
-trait WitchcraftAI extends AI with WitchcraftNodeGenerator
+trait AI extends org.botequim.ai.AI with NodeGenerator

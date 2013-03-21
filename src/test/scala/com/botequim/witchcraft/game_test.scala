@@ -23,11 +23,11 @@ import org.scalatest.{FunSuite, BeforeAndAfter}
 import Form._
 
 
-class WitchcraftGameSuite extends FunSuite with BeforeAndAfter {
-  var game: WitchcraftGame = _
+class GameSuite extends FunSuite with BeforeAndAfter {
+  var game: Game = _
 
   before {
-    game = WitchcraftGame.apply
+    game = Game.apply
   }
 
   test("Compose works nicelly with many points available.") {
@@ -48,7 +48,7 @@ been exceeded.""") {
 
   test("""Compose returns a None when the number of points for the player have
 been exceeded.""") {
-    game = new WitchcraftGame(Map(true -> Spell(), false -> Spell()),
+    game = new Game(Map(true -> Spell(), false -> Spell()),
                               Map(true -> 0d, false -> 10d),
                               Map(true -> false, false -> false),
                               Map(true -> 10d, false -> 88d))
@@ -56,7 +56,7 @@ been exceeded.""") {
   }
 
   test("""Game points never reaches below zero.""") {
-    game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
+    game = new Game(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
                               Map(true -> 10d, false -> 10d),
                               Map(true -> true, false -> true),
@@ -66,7 +66,7 @@ been exceeded.""") {
   }
 
   test("""Game points is decreased by turn points.""") {
-    game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
+    game = new Game(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
                               Map(true -> 10d, false -> 10d),
                               Map(true -> true, false -> true),
@@ -80,13 +80,13 @@ been exceeded.""") {
                                   false -> ((Concave, 8, 8) :: Spell())),
                               Map(true -> 10d, false -> 10d),
                               Map(true -> 4d, false -> 88d))
-    val g1 = new WitchcraftGame(prms._1, prms._2,
+    val g1 = new Game(prms._1, prms._2,
       Map(true -> false, false -> false), prms._3)
-    val g2 = new WitchcraftGame(prms._1, prms._2,
+    val g2 = new Game(prms._1, prms._2,
       Map(true -> true, false -> false), prms._3)
-    val g3 = new WitchcraftGame(prms._1, prms._2,
+    val g3 = new Game(prms._1, prms._2,
       Map(true -> false, false -> true), prms._3)
-    val g4 = new WitchcraftGame(prms._1, prms._2,
+    val g4 = new Game(prms._1, prms._2,
       Map(true -> true, false -> true), prms._3)
     assert(g1.getAftermath === None)
     assert(g2.getAftermath === None)
@@ -95,7 +95,7 @@ been exceeded.""") {
   }
 
   test("""Turn points are restored in the aftermath.""") {
-    game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
+    game = new Game(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Circle, 0, 0) :: Spell())),
                               Map(true -> 0d, false -> 0d),
                               Map(true -> true, false -> true),
@@ -108,7 +108,7 @@ been exceeded.""") {
 
   test("""The getAftermath causes the correct damage taking into
 account the reflection shield.""") {
-    game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
+    game = new Game(Map(true -> ((Circle, 0, 0) :: Spell(1)),
                                   false -> ((Concave, 8, 8) :: Spell())),
                               Map(true -> 10d, false -> 10d),
                               Map(true -> true, false -> true),
@@ -119,7 +119,7 @@ account the reflection shield.""") {
 
   test("""Entire game session works as expected""") {
     val first = game
-    def doTurn(g: (Option[WitchcraftGame], Int)): Stream[(Option[WitchcraftGame], Int)] ={
+    def doTurn(g: (Option[Game], Int)): Stream[(Option[Game], Int)] ={
       val nu = g._1 flatMap {
         _.compose(Concave, 4, 1, true) } flatMap {
         _.commit(true).commit(false).getAftermath
@@ -127,7 +127,7 @@ account the reflection shield.""") {
       (nu, g._2) #:: doTurn((nu, g._2 + 1))
     }
 
-    val sx = doTurn(Option(game), 1) takeWhile { i: (Option[WitchcraftGame], Int) =>
+    val sx = doTurn(Option(game), 1) takeWhile { i: (Option[Game], Int) =>
       i._1 match {
         case Some(g) => {
           assert(g.gamePoints(false) >=
@@ -146,17 +146,17 @@ account the reflection shield.""") {
     assert(sx.last._1.get.gamePoints(true) > 10d, "Overall active player")
   }
 
-  def getAndTestCompose(o: Option[WitchcraftGame]) ={
+  def getAndTestCompose(o: Option[Game]) ={
     getAndTestGame(o, "compose")
   }
-  def getAndTestAftermath(o: Option[WitchcraftGame]) ={
+  def getAndTestAftermath(o: Option[Game]) ={
     getAndTestGame(o, "aftermath")
   }
-  def getAndTestGame(o: Option[WitchcraftGame], m: String) ={
+  def getAndTestGame(o: Option[Game], m: String) ={
     o match {
       case Some(g) => g
       case None => {
-        assert(false, "WitchcraftGame produced a None on " + m)
+        assert(false, "Game produced a None on " + m)
         null
       }
     }

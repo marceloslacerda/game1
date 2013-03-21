@@ -22,13 +22,13 @@ package org.botequim.game1.swing
 import scala.swing._
 import javax.swing.JComponent
 import org.botequim._
-import game1.rules.{Spell, WitchcraftGame}
+import game1.rules.{Spell, Game}
 import swing.ZebraJList
 import net.miginfocom.swing.MigLayout
 
 class SpellPanel extends BorderPanel {
   var aftermath = false
-  var pGame: WitchcraftGame = WitchcraftGame()
+  var pGame: Game = Game()
   val spellA = ListView.wrap[String](new ZebraJList())
   val aFields = (new Label("B attack"),    new Label("10")) ::
                 (new Label("A relfect"),   new Label("50%")) ::
@@ -134,7 +134,7 @@ def popSpell(p: Boolean) {
     bPoints._2.text = pGame.getAftermathCalculus(false)("pFinal").toString
   }
 
-  def updateScore(game: WitchcraftGame) {
+  def updateScore(game: Game) {
     implicit def doubleToStr(a: Double) = a.toString
     
     def setScoreFields(pPoints: (Label, Label),

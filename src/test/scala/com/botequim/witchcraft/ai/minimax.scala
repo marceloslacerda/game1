@@ -21,16 +21,16 @@ package org.botequim.game1.ai
 
 import org.scalatest.{FunSuite, BeforeAndAfter}
 import org.botequim._
-import game1.rules.{WitchcraftGame, Effect, Form, Spell}
+import game1.rules.{Game, Effect, Form, Spell}
 import ai._
 import Effect._
 
 class MinimaxAISuite extends FunSuite with BeforeAndAfter {
-  var game: WitchcraftGame = _
+  var game: Game = _
   val ai = new MinimaxAI()
 
   before {
-    game = WitchcraftGame.apply
+    game = Game.apply
   }
 
   object TestMinimax extends MinimaxAlgorithm[Int] {
@@ -189,13 +189,13 @@ class MinimaxAISuite extends FunSuite with BeforeAndAfter {
     }
   }
 
-  def fuse(g1: WitchcraftGame, g2: WitchcraftGame): WitchcraftGame =
-    new WitchcraftGame(g1.spells.updated(false, g2.spells(false)),
+  def fuse(g1: Game, g2: Game): Game =
+    new Game(g1.spells.updated(false, g2.spells(false)),
       Map(true -> 0.0, false -> 0.0),
       Map(true -> true, false -> true),
       g1.gamePoints)
 
-  def timed(f: () => WitchcraftGame): WitchcraftGame = {
+  def timed(f: () => Game): Game = {
     val prev = System.currentTimeMillis
     val ret = f()
     val current = System.currentTimeMillis

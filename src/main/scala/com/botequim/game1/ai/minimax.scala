@@ -20,9 +20,9 @@
 package org.botequim.game1.ai
 import org.botequim._
 import ai._
-import game1.rules.{WitchcraftGame, Form}
+import game1.rules.{Game, Form}
 
-class MinimaxAI extends MinimaxAlgorithm[WitchcraftGame] with WitchcraftAI {
+class MinimaxAI extends MinimaxAlgorithm[Game] with AI {
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0d ||
     node.gamePoints(false) == 0d
@@ -41,7 +41,7 @@ class MinimaxAI extends MinimaxAlgorithm[WitchcraftGame] with WitchcraftAI {
   def getMove(sx: Seq[Node], player: Boolean): Node = null
 }
 
-class MinimaxAlphaBetaAI extends AlphaBetaMinimax[WitchcraftGame] with WitchcraftAI {
+class MinimaxAlphaBetaAI extends AlphaBetaMinimax[Game] with AI {
   def isTerminal(node: Node): Boolean =
     node.gamePoints(true) == 0d ||
     node.gamePoints(false) == 0d

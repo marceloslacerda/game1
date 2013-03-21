@@ -32,13 +32,13 @@ object Form extends Enumeration {
 import Effect._
 import Form._
 
- case class WitchcraftGame (spells: Map[Boolean, Spell],
+case class Game (spells: Map[Boolean, Spell],
                       turnPoints: Map[Boolean, Double],
                       commits: Map[Boolean, Boolean],
                       gamePoints: Map[Boolean, Double]) {
-  import WitchcraftGame._
+  import Game._
 
-  def compose(f: Form, points: Int, intersec: Int, player: Boolean): Option[WitchcraftGame] ={
+  def compose(f: Form, points: Int, intersec: Int, player: Boolean): Option[Game] ={
     if(points < 3 && f == Convex ||
        points < 4 && f == Concave ||
        points == 4 && f == Concave && intersec > 1 ||
@@ -54,15 +54,15 @@ import Form._
     if(newTurnPoints < 0)
       return None
     else
-      return Some(new WitchcraftGame(newSpells,
+      return Some(new Game(newSpells,
                          turnPoints.updated(player, newTurnPoints),
                          commits,
                          gamePoints))
   }
 
-  def commit(player: Boolean): WitchcraftGame ={
+  def commit(player: Boolean): Game ={
     val nppt = pointsPTurnLimit.min(gamePoints(player))
-    new WitchcraftGame(spells,
+    new Game(spells,
                    turnPoints.updated(player, nppt),
                    commits.updated(player, true),
                    gamePoints)
@@ -93,7 +93,7 @@ import Form._
         "pCharge" -> ac._8)
   }
 
-  def getAftermath: Option[WitchcraftGame] ={
+  def getAftermath: Option[Game] ={
     if(commits exists {!_._2}) return None
     val resultA = aftermathCalculus(true)
     val resultB = aftermathCalculus(false)
@@ -105,18 +105,18 @@ import Form._
     val newSpells = Map(
       true -> Spell(resultA._8),
       false -> Spell(resultB._8))
-    Option(new WitchcraftGame(newSpells,
+    Option(new Game(newSpells,
                        newTurnPoints,
                        initialCommitMap,
                        newGamePoints))
   }
 }
 
-object WitchcraftGame {
+object Game {
   val pointsPTurnLimit = 10d
   val initialPoints = 100d
   val initialCommitMap = Map(true -> false, false -> false)
-  def apply() = new WitchcraftGame(
+  def apply() = new Game(
       Map(true -> Spell(), false -> Spell()),
       Map(true -> pointsPTurnLimit, false -> pointsPTurnLimit),
       initialCommitMap,

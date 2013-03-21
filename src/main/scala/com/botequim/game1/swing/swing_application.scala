@@ -24,7 +24,7 @@ import Swing._
 import javax.swing.JPanel
 import org.botequim._
 import swing.Menu
-import game1.rules.{Form, Spell, WitchcraftGame}
+import game1.rules.{Form, Spell, Game}
 import java.awt.{Color}
 
 object Main extends SimpleSwingApplication {
@@ -39,7 +39,7 @@ object Main extends SimpleSwingApplication {
   def eBMaker = new Button(Action("Exit")(onExit))
   val exitButton = eBMaker
   val cSize = (windowSize.height * 0.70).toInt
-  val board: WitchcraftBoard = new WitchcraftBoard {
+  val board: Board = new Board {
     override lazy val canvas = new Canvas(cSize)
     def changeTPoints(tp: String) {
       availTPointsLabel.text = tp
@@ -105,7 +105,7 @@ object Main extends SimpleSwingApplication {
     commitButton.enabled = true
     board.canvas.formReadyListener = Option(formReady)
     board.canvas.boardClearedListener = Option(boardCleared)
-    availTPointsLabel.text = WitchcraftGame.pointsPTurnLimit.toString
+    availTPointsLabel.text = Game.pointsPTurnLimit.toString
 
     contents = menu.component
   }
