@@ -1,4 +1,4 @@
-package com.botequim;
+package org.botequim.swing;
 /**
  * A JList that supports a zebra stripe background.
  */

@@ -1,4 +1,4 @@
-name := "wichcraft"
+name := "game1"
 
 version := "0.1"
 

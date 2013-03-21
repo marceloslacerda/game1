@@ -1,26 +1,26 @@
 /*
  * Copyright 2013 Marcelo de Sena Lacerda
  *
- * This file is part of Witchcraft.
+ * This file is part of Botequim's Game 1.
  *
- * Witchcraft is free software: you can redistribute it and/or modify
+ * Game 1 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Witchcraft is distributed in the hope that it will be useful,
+ * Game 1 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Witchcraft.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Game 1.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.botequim.witchcraft.ai
+package org.botequim.game1.ai
 
-import com.botequim.witchcraft.rules._
-import com.botequim.ai.AI
+import org.botequim.game1.rules._
+import org.botequim.ai.AI
 import Form._
 
 trait WitchcraftNodeGenerator {
