@@ -29,7 +29,7 @@ trait WitchcraftNodeGenerator {
   val combinations: Seq[(Int, Int, Int, Int)] = {
     val pointsLimit = WitchcraftGame.pointsPTurnLimit.toInt
     for {
-      mCharge <- 0 to pointsLimit
+      mCharge <- 1 to pointsLimit
       attack <- 0 +: (4 to (pointsLimit - mCharge))
       defense <- 0 +: (3 to (pointsLimit - (attack + mCharge)))
       charge = pointsLimit - (attack + defense + mCharge)

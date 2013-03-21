@@ -100,11 +100,13 @@ import Form._
     val newGamePoints = Map(
       true -> resultA._7,
       false -> resultB._7)
+    val newTurnPoints = Map(true -> pointsPTurnLimit.min(newGamePoints(true)),
+      false -> pointsPTurnLimit.min(newGamePoints(false)))
     val newSpells = Map(
       true -> Spell(resultA._8),
       false -> Spell(resultB._8))
     Option(new WitchcraftGame(newSpells,
-                       turnPoints,
+                       newTurnPoints,
                        initialCommitMap,
                        newGamePoints))
   }

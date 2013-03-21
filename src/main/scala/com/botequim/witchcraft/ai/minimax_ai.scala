@@ -35,7 +35,7 @@ class MinimaxAI extends MinimaxAlgorithm[WitchcraftGame] with WitchcraftAI {
     super.children(n, player) map { c => c.getAftermath.getOrElse(c) }
 
   def getMove(sx: Seq[Node], player: Boolean, depth: Int): Node =
-    max(children(sx.head, player), player, depth)
+    children(sx.head, player) maxBy { n => max(n, player, depth) }
 
   def getMove(sx: Seq[Node], player: Boolean): Node = null
 }
@@ -54,7 +54,7 @@ class MinimaxAlphaBetaAI extends AlphaBetaMinimax[WitchcraftGame] with Witchcraf
     super.children(n, player) map { c => c.getAftermath.getOrElse(c) }
 
   def getMove(sx: Seq[Node], player: Boolean, depth: Int): Node =
-    max(children(sx.head, player), player, depth, Double.NegativeInfinity, Double.PositiveInfinity)
+    children(sx.head, player) minBy { n => min(n, !player, depth, Double.NegativeInfinity, Double.PositiveInfinity) }
 
-  def getMove(sx: Seq[Node], player: Boolean): Node = null
+  def getMove(sx: Seq[Node], player: Boolean): Node = getMove(sx, player, 1)
 }

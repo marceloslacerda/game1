@@ -8,39 +8,38 @@ abstract class MinimaxAlgorithm<Node> {
     abstract public boolean victoryOrDraw(Node n, boolean player);
     abstract public double eval(Node n,  boolean player);
     abstract public Seq<Node> children(Node n, boolean player);
-    public Node max(Seq<Node> sx, boolean player, int depth) {
-        if(depth == 0)
-            throw new UnsupportedOperationException("Cannot calc max with depth 0");
-        //        System.out.println("Depth: " + depth);
-        Node maxNode = sx.head();
+    public double max(Node node, boolean player, int depth) {
+        if(depth <= 0)
+            throw new UnsupportedOperationException("Cannot calc max with depth <= 0");
+        //                System.out.println("Depth: " + depth);
         double maxEval = Double.NEGATIVE_INFINITY;
-        for(Node n : JavaConversions.asJavaIterable(sx)) {
-            double newEval = eval(min(children(n, !player), player, depth -1), player);
-            //  System.out.println("Node: " + n + " Eval: " + newEval);
+        for(Node c : JavaConversions.asJavaIterable(children(node, !player))) {
+            //            System.out.println("Max Node: " + c);
+            double newEval = min(c, player, depth -1);
+            //              System.out.println("Eval: " + newEval);
             if(newEval > maxEval) {
                 maxEval = newEval;
-                maxNode = n;
             }
         }
-        return maxNode;
+        return maxEval;
     }
-    public Node min(Seq<Node> sx, boolean player, int depth) {
-        Node minNode = sx.head();
+    public double min(Node node, boolean player, int depth) {
         double minEval = Double.POSITIVE_INFINITY;
         double newEval;
-        for(Node n : JavaConversions.asJavaIterable(sx)) {
-            if(isTerminal(n)) {
-                if(victoryOrDraw(n, player)) continue; // Max infinity so, never picked
-                else return n; // Defeat is the minimum possible value
+        for(Node c : JavaConversions.asJavaIterable(children(node, player))) {
+            //            System.out.println("Min Node: " + c);
+            if(isTerminal(c)) {
+                if(victoryOrDraw(c, player)) continue; // Max infinity so, never picked
+                else return eval(c, player); // Defeat is the minimum possible value
             }
-            if(depth == 0) newEval = eval(n, player);
-            else newEval = eval(max(children(n, player), player, depth), player);
+            if(depth == 0) newEval = eval(c, player);
+            else newEval = max(c, player, depth);
+            //            System.out.println("Eval: " + newEval);
             if(newEval < minEval) {
                 minEval = newEval;
-                minNode = n;
             }
         }
-        return minNode;
+        return minEval;
     }
 }
 
@@ -49,47 +48,45 @@ abstract class AlphaBetaMinimax<Node> {
     abstract public boolean victoryOrDraw(Node n, boolean player);
     abstract public double eval(Node n,  boolean player);
     abstract public Seq<Node> children(Node n, boolean player);
-    public Node max(Seq<Node> sx, boolean player, int depth, double alpha, double beta) {
+    public double max(Node node, boolean player, int depth, double alpha, double beta) {
         double a = alpha;
         double b = beta;
-        if(depth == 0)
-            throw new UnsupportedOperationException("Cannot calc max with depth 0");
         //        System.out.println("Depth: " + depth);
-        Node maxNode = sx.head();
         double maxEval = Double.NEGATIVE_INFINITY;
         double newEval;
-        for(Node n : JavaConversions.asJavaIterable(sx)) {
-            newEval = eval(min(children(n, !player), player, depth - 1, a, b), player);
-            //  System.out.println("Node: " + n + " Eval: " + newEval);
+        for(Node c : JavaConversions.asJavaIterable(children(node, !player))) {
+            if(isTerminal(c)) {
+                if(victoryOrDraw(c, player)) return eval(c, player); // Best case
+                else continue; // worst case
+            }
+            if(depth == 0) newEval = eval(c, player);
+            else newEval = min(c, player, depth - 1, a, b);
             if(newEval > maxEval) {
                 maxEval = newEval;
-                maxNode = n;
             }
-            if(newEval >= b) return n;
+            if(newEval >= b) return newEval;
             if(newEval > a) a = newEval;
         }
-        return maxNode;
+        return maxEval;
     }
-    public Node min(Seq<Node> sx, boolean player, int depth, double alpha, double beta) {
+    public double min(Node node, boolean player, int depth, double alpha, double beta) {
         double a = alpha;
         double b = beta;
-        Node minNode = sx.head();
         double minEval = Double.POSITIVE_INFINITY;
         double newEval;
-        for(Node n : JavaConversions.asJavaIterable(sx)) {
-            if(isTerminal(n)) {
-                if(victoryOrDraw(n, player)) continue; // Infinity so, never picked
-                else return n; // Defeat is the minimum possible value
+        for(Node c : JavaConversions.asJavaIterable(children(node, player))) {
+            if(isTerminal(c)) {
+                if(victoryOrDraw(c, player)) continue; // Infinity so, never picked
+                else return eval(c, player); // Defeat is the minimum possible value
             }
-            if(depth == 0) newEval = eval(n, player);
-            else newEval = eval(max(children(n, player), player, depth, a, b), player);
+            if(depth == 0) newEval = eval(c, player);
+            else newEval = max(c, player, depth - 1, a, b);
             if(newEval < minEval) {
                 minEval = newEval;
-                minNode = n;
             }
-            if(newEval <= a) return n;
+            if(newEval <= a) return newEval;
             if(newEval <= b) b = newEval;
         }
-        return minNode;
+        return minEval;
     }
 }

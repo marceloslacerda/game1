@@ -94,6 +94,18 @@ been exceeded.""") {
     assert(g4.getAftermath.isInstanceOf[Some[_]])
   }
 
+  test("""Turn points are restored in the aftermath.""") {
+    game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
+                                  false -> ((Circle, 0, 0) :: Spell())),
+                              Map(true -> 0d, false -> 0d),
+                              Map(true -> true, false -> true),
+                              Map(true -> 14d, false -> 88d))
+    game = getAndTestAftermath(game.getAftermath)
+    assert(game.turnPoints(true) === 4d)
+    assert(game.turnPoints(false) === 10d)
+  }
+
+
   test("""The getAftermath causes the correct damage taking into
 account the reflection shield.""") {
     game = new WitchcraftGame(Map(true -> ((Circle, 0, 0) :: Spell(1)),
